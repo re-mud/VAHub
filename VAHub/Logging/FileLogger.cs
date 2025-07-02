@@ -10,7 +10,7 @@ public class FileLogger : ILogger
     private readonly object _lockFile = new();
 
     /// <param name="logPath">
-    /// disable logging to file if equal to null
+    /// Disable logging to file if equal to null.
     /// </param>
     /// <param name="messageFormat">
     /// {0} - date<br></br>

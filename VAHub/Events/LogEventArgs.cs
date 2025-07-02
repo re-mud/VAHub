@@ -5,7 +5,7 @@ namespace VAHub.Events;
 public class LogEventArgs(string message, string text, LogLevel level, DateTime time) : EventArgs
 {
     /// <summary>
-    /// formatted log
+    /// Formatted log.
     /// </summary>
     public readonly string Message = message;
     public readonly string Text = text;
