@@ -1,13 +1,12 @@
 ﻿using VAHub.Enums;
 using VAHub.Interfaces;
+using VAHub.Options;
 
 namespace VAHub.Logging;
 
 public class FileLogger : ILogger
 {
-    private readonly string? _logPath;
-    private readonly string _messageFormat;
-    private readonly string _dateFormat;
+    private readonly FileLoggerOptions _options;
     private readonly object _lockFile = new();
 
     /// <param name="logPath">
@@ -18,19 +17,13 @@ public class FileLogger : ILogger
     /// {1} - log level<br></br>
     /// {2} - message
     /// </param>
-    public FileLogger(string? logPath, string messageFormat, string dateFormat)
+    public FileLogger(FileLoggerOptions options)
     {
-        _logPath = logPath;
-        _messageFormat = messageFormat;
-        _dateFormat = dateFormat;
+        _options = options;
 
-        if (string.IsNullOrWhiteSpace(logPath))
+        if (!string.IsNullOrWhiteSpace(_options.LogPath))
         {
-            _logPath = null;
-        }
-        else
-        {
-            CreateFileLog(_logPath);
+            CreateFileLog(_options.LogPath);
         }
     }
 
@@ -40,14 +33,14 @@ public class FileLogger : ILogger
         {
             try
             {
-                string message = string.Format(_messageFormat,
-                    time.ToString(_dateFormat),
+                string message = string.Format(_options.MessageFormat,
+                    time.ToString(_options.DateFormat),
                     level.ToString(),
                     text);
 
-                if (_logPath != null)
+                if (!string.IsNullOrWhiteSpace(_options.LogPath))
                 {
-                    File.AppendAllText(_logPath, message);
+                    File.AppendAllText(_options.LogPath, message);
                 }
 
                 return message;
