@@ -22,9 +22,7 @@ public class FileLogger : ILogger
         _options = options;
 
         if (!string.IsNullOrWhiteSpace(_options.LogPath))
-        {
             CreateFileLog(_options.LogPath);
-        }
     }
 
     public string Log(string text, LogLevel level, DateTime time)
@@ -39,9 +37,7 @@ public class FileLogger : ILogger
                     text);
 
                 if (!string.IsNullOrWhiteSpace(_options.LogPath))
-                {
                     File.AppendAllText(_options.LogPath, message);
-                }
 
                 return message;
             }
@@ -58,9 +54,8 @@ public class FileLogger : ILogger
     {
         string? directoryName = Path.GetDirectoryName(logPath);
         if (directoryName != null)
-        {
             Directory.CreateDirectory(directoryName);
-        }
+
         File.WriteAllText(logPath, string.Empty);
     }
 }

@@ -11,7 +11,8 @@ public class OptionsManager
     /// <exception cref="FileNotFoundException"></exception>
     public OptionsManager(string jsonFilePath, bool fileOptional = false)
     {
-        if (string.IsNullOrEmpty(jsonFilePath)) throw new ArgumentNullException(nameof(jsonFilePath));
+        if (string.IsNullOrEmpty(jsonFilePath))
+            throw new ArgumentNullException(nameof(jsonFilePath));
 
         if (!fileOptional && !File.Exists(jsonFilePath))
         {
@@ -32,16 +33,15 @@ public class OptionsManager
     /// <exception cref="JsonException"></exception>
     public T Get<T>(string name) where T : new()
     {
-        if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+        if (string.IsNullOrEmpty(name)) 
+            throw new ArgumentNullException(nameof(name));
 
         if(_document != null && _document.RootElement.TryGetProperty(name, out JsonElement element))
         {
             T? value = element.Deserialize<T>();
 
             if (value != null)
-            {
                 return value;
-            }
         }
         return new();
     }
