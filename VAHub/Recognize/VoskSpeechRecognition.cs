@@ -2,6 +2,7 @@
 
 using VAHub.Interfaces;
 using VAHub.Options;
+using System.Text.Json;
 
 namespace VAHub.Recognize;
 
@@ -28,29 +29,26 @@ public class VoskSpeechRecognition : ISpeechRecognition
 
         _dataProcessed += length;
 
-        if (_recognizer.AcceptWaveform(buffer, length))
-        {
-            if (_dataProcessed > _options.ThresholdDataProcessed)
-            {
-                _dataProcessed = 0;
-                Reset();
-            }
-
-            return true;
-        }
-        return false;
+        return _recognizer.AcceptWaveform(buffer, length);
     }
 
     public void Reset()
     {
-        _recognizer.Dispose();
-        _recognizer = new(_model, _options.SampleRate);
+        if (_dataProcessed > _options.ThresholdSec * _options.SampleRate)
+        {
+            _recognizer.Dispose();
+            _recognizer = new(_model, _options.SampleRate);
+            _dataProcessed = 0;
+        }
+        else
+        {
+            _recognizer.Reset();
+        }
     }
 
     public string Result()
     {
-        string result = _recognizer.Result();
-
-        return result.Substring(14, result.Length - 17);
+        return JsonDocument.Parse(_recognizer.Result())
+            .RootElement.GetProperty("text").GetString() ?? string.Empty;
     }
 }
