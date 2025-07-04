@@ -1,23 +1,23 @@
 ﻿using Vosk;
 
 using VAHub.Interfaces;
+using VAHub.Options;
 
 namespace VAHub.Recognize;
 
 public class VoskSpeechRecognition : ISpeechRecognition
 {
+    private VoskSpeechRecognitionOptions _options;
     private VoskRecognizer _recognizer;
-    private Func<VoskRecognizer> _createVoskRecognizer;
-    private int _thresholdDataProcessed;
+    private Model _model;
     private int _dataProcessed = 0;
 
-    public VoskSpeechRecognition(Func<VoskRecognizer> createVoskRecognizer, int thresholdDataProcessed)
+    public VoskSpeechRecognition(VoskSpeechRecognitionOptions options)
     {
-        ArgumentNullException.ThrowIfNull(createVoskRecognizer, nameof(createVoskRecognizer));
+        _options = options;
 
-        _createVoskRecognizer = createVoskRecognizer;
-        _thresholdDataProcessed = thresholdDataProcessed;
-        _recognizer = _createVoskRecognizer();
+        _model = new(_options.ModelPath);
+        _recognizer = new(_model, _options.SampleRate);
     }
 
     /// <exception cref="ArgumentException"></exception>
@@ -30,7 +30,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
 
         if (_recognizer.AcceptWaveform(buffer, length))
         {
-            if (_dataProcessed > _thresholdDataProcessed)
+            if (_dataProcessed > _options.ThresholdDataProcessed)
             {
                 _dataProcessed = 0;
                 Reset();
@@ -44,7 +44,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
     public void Reset()
     {
         _recognizer.Dispose();
-        _recognizer = _createVoskRecognizer();
+        _recognizer = new(_model, _options.SampleRate);
     }
 
     public string Result()
