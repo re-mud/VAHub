@@ -17,11 +17,9 @@ public class NAudioMicrophone : IMicrophone
         set => _waveInEvent.DeviceNumber = value;
     }
 
-    public NAudioMicrophone(WaveInEvent waveInEvent)
+    public NAudioMicrophone()
     {
-        ArgumentNullException.ThrowIfNull(waveInEvent);
-
-        _waveInEvent = waveInEvent;
+        _waveInEvent = new();
         _waveInEvent.DataAvailable += WaveInEvent_DataAvailable;
     }
 
