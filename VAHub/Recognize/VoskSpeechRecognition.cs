@@ -23,7 +23,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
     /// <exception cref="ArgumentException"></exception>
     public bool Accept(byte[] buffer, int length)
     {
-        if (length <= buffer.Length) 
+        if (length > buffer.Length) 
             throw new ArgumentException("Invalid buffer length");
 
         _dataProcessed += length;
