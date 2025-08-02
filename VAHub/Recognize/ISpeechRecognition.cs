@@ -1,4 +1,4 @@
-﻿namespace VAHub.Options.Recognize;
+﻿namespace VAHub.Recognize;
 
 public interface ISpeechRecognition
 {

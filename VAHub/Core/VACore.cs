@@ -2,9 +2,9 @@
 using VAHub.Recognize;
 using VAHub.Synthesize;
 
-namespace VAHub.Services;
+namespace VAHub.Core;
 
-public class Core
+public class VACore
 {
     public event Action<string>? RecognitionCompleted;
 
@@ -12,7 +12,7 @@ public class Core
     private ISpeechRecognition _recognition;
     private ISpeechSynthesizer _synthesizer;
 
-    public Core(IMicrophone microphone, ISpeechRecognition recognition, ISpeechSynthesizer synthesizer)
+    public VACore(IMicrophone microphone, ISpeechRecognition recognition, ISpeechSynthesizer synthesizer)
     {
         ArgumentNullException.ThrowIfNull(microphone, nameof(microphone));
         ArgumentNullException.ThrowIfNull(recognition, nameof(recognition));

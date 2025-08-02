@@ -1,10 +1,9 @@
 ﻿using VAHub.Input;
 using VAHub.Managers;
 using VAHub.Recognize;
-using VAHub.Services;
 using VAHub.Synthesize;
 
-namespace VAHub.Factories;
+namespace VAHub.Core;
 
 public class CoreFactory
 {
@@ -26,13 +25,13 @@ public class CoreFactory
             () => CreateWithOptions<WindowsSpeechSynthesizer, WindowsSpeechSynthesizerOptions>());
     }
 
-    public Core CreateCore(CoreOptions options)
+    public VACore CreateCore(CoreOptions options)
     {
         IMicrophone microphone = CreateMicrophone(options.MicrophoneKey) ?? throw new KeyNotFoundException(options.MicrophoneKey);
         ISpeechRecognition recognition = CreateSpeechRecognition(options.RecognitionKey) ?? throw new KeyNotFoundException(options.RecognitionKey);
         ISpeechSynthesizer synthesizer = CreateSpeechSynthesizer(options.SynthesizerKey) ?? throw new KeyNotFoundException(options.SynthesizerKey);
 
-        return new Core(microphone, recognition, synthesizer);
+        return new VACore(microphone, recognition, synthesizer);
     }
 
     public IMicrophone? CreateMicrophone(string key)

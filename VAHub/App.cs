@@ -1,14 +1,14 @@
-﻿using VAHub.Logging;
-using VAHub.Services;
+﻿using VAHub.Core;
+using VAHub.Logging;
 
 namespace VAHub;
 
 public class App
 {
-    private Core _core;
+    private VACore _core;
     private ManualResetEventSlim _mre;
 
-    public App(Core core)
+    public App(VACore core)
     {
         _core = core;
         _mre = new ManualResetEventSlim(false);

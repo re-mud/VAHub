@@ -1,5 +1,4 @@
-﻿namespace VAHub.Recognize;
-
+﻿
 public class VoskSpeechRecognitionOptions
 {
     public string ModelPath { set; get; } = string.Empty;
