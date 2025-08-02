@@ -1,5 +1,4 @@
 ﻿using VAHub.Input;
-using VAHub.Interfaces;
 using VAHub.Managers;
 using VAHub.Options;
 using VAHub.Recognize;

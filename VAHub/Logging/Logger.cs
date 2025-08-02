@@ -1,6 +1,5 @@
 ﻿using VAHub.Enums;
 using VAHub.Events;
-using VAHub.Interfaces;
 
 namespace VAHub.Logging;
 
