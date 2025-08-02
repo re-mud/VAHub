@@ -1,4 +1,4 @@
-﻿namespace VAHub.Enums;
+﻿namespace VAHub.Logging;
 
 public enum LogLevel
 {

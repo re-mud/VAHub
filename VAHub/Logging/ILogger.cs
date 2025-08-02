@@ -1,6 +1,4 @@
-﻿using VAHub.Enums;
-
-namespace VAHub.Logging;
+﻿namespace VAHub.Logging;
 
 public interface ILogger
 {
