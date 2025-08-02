@@ -1,5 +1,4 @@
-﻿using VAHub.Events;
-using VAHub.Input;
+﻿using VAHub.Input;
 using VAHub.Recognize;
 using VAHub.Synthesize;
 

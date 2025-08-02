@@ -1,6 +1,4 @@
-﻿using VAHub.Logging;
-
-namespace VAHub.Events;
+﻿namespace VAHub.Logging;
 
 public class LogEventArgs(string message, string text, LogLevel level, DateTime time) : EventArgs
 {

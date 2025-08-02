@@ -1,6 +1,4 @@
-﻿using VAHub.Events;
-
-namespace VAHub.Logging;
+﻿namespace VAHub.Logging;
 
 public static class Logger
 {

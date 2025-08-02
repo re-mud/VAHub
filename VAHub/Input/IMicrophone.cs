@@ -1,6 +1,4 @@
-﻿using VAHub.Events;
-
-namespace VAHub.Input;
+﻿namespace VAHub.Input;
 
 public interface IMicrophone
 {

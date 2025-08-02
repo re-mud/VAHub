@@ -1,4 +1,4 @@
-﻿namespace VAHub.Events;
+﻿namespace VAHub.Input;
 
 public class MicrophoneEventArgs(byte[] buffer, int length) : EventArgs
 {
