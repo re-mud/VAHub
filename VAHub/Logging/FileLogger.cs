@@ -1,6 +1,4 @@
-﻿using VAHub.Options;
-
-namespace VAHub.Logging;
+﻿namespace VAHub.Logging;
 
 public class FileLogger : ILogger
 {

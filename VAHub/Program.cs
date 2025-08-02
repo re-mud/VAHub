@@ -2,7 +2,6 @@
 using VAHub.Factories;
 using VAHub.Logging;
 using VAHub.Managers;
-using VAHub.Options;
 using VAHub.Services;
 
 OptionsManager optionsManager = new OptionsManager("appsettings.json", true);

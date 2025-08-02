@@ -1,6 +1,5 @@
 ﻿using VAHub.Input;
 using VAHub.Managers;
-using VAHub.Options;
 using VAHub.Recognize;
 using VAHub.Services;
 using VAHub.Synthesize;

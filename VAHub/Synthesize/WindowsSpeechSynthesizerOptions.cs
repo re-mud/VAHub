@@ -1,4 +1,4 @@
-﻿namespace VAHub.Options;
+﻿namespace VAHub.Synthesize;
 
 public class WindowsSpeechSynthesizerOptions
 {

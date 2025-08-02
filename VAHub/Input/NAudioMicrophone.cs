@@ -1,5 +1,4 @@
 ﻿using NAudio.Wave;
-using VAHub.Options;
 
 namespace VAHub.Input;
 
