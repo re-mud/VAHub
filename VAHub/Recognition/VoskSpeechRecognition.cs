@@ -1,7 +1,7 @@
 ﻿using Vosk;
 using System.Text.Json;
 
-namespace VAHub.Recognize;
+namespace VAHub.Recognition;
 
 public class VoskSpeechRecognition : ISpeechRecognition
 {

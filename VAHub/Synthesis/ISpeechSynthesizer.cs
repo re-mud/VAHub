@@ -1,4 +1,4 @@
-﻿namespace VAHub.Synthesize;
+﻿namespace VAHub.Synthesis;
 
 public interface ISpeechSynthesizer
 {

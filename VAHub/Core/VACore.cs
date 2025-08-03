@@ -1,6 +1,6 @@
 ﻿using VAHub.Input;
-using VAHub.Recognize;
-using VAHub.Synthesize;
+using VAHub.Recognition;
+using VAHub.Synthesis;
 
 namespace VAHub.Core;
 

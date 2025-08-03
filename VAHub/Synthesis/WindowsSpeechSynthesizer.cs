@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 
-namespace VAHub.Synthesize;
+namespace VAHub.Synthesis;
 
 public class WindowsSpeechSynthesizer : ISpeechSynthesizer
 {
