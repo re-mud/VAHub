@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using VAHub.Logging;
 
 namespace VAHub.Managers;
 
@@ -12,10 +13,14 @@ public class OptionsManager
     public OptionsManager(string jsonFilePath, bool fileOptional = false)
     {
         if (string.IsNullOrEmpty(jsonFilePath))
+        {
+            Logger.Error("Путь к файлу кофигурации не может быть пустым");
             throw new ArgumentNullException(nameof(jsonFilePath));
+        }
 
         if (!fileOptional && !File.Exists(jsonFilePath))
         {
+            Logger.Error($"Файл конфигурации '{jsonFilePath}' не найден");
             throw new FileNotFoundException($"File '{jsonFilePath}' not found.");
         }
         else if (File.Exists(jsonFilePath))

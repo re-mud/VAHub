@@ -1,5 +1,6 @@
 ﻿using Vosk;
 using System.Text.Json;
+using VAHub.Logging;
 
 namespace VAHub.Recognition;
 
@@ -22,7 +23,10 @@ public class VoskSpeechRecognition : ISpeechRecognition
     public bool Accept(byte[] buffer, int length)
     {
         if (length > buffer.Length)
+        {
+            Logger.Error("Некорректный размер буфера");
             throw new ArgumentException("Invalid buffer length");
+        }
 
         _dataProcessed += length;
 
@@ -33,6 +37,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
     {
         if (_dataProcessed > _options.ThresholdSec * _options.SampleRate)
         {
+            Logger.Debug("Сброс Vosk распознавателя");
             _recognizer.Dispose();
             _recognizer = new(_model, _options.SampleRate);
             _dataProcessed = 0;

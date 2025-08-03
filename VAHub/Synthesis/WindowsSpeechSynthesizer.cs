@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 
+using VAHub.Logging;
+
 namespace VAHub.Synthesis;
 
 public class WindowsSpeechSynthesizer : ISpeechSynthesizer
@@ -11,7 +13,10 @@ public class WindowsSpeechSynthesizer : ISpeechSynthesizer
     public WindowsSpeechSynthesizer(WindowsSpeechSynthesizerOptions options)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            Logger.Error($"Синтез речи с '{nameof(WindowsSpeechSynthesizer)}' доступно только в Windows");
             throw new PlatformNotSupportedException("Available on Windows only.");
+        }
 
         _speechSynthesizer = new SpeechSynthesizer();
         _options = options;
