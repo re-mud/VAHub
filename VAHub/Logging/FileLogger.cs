@@ -32,8 +32,9 @@ public class FileLogger : ILogger
                     level.ToString(),
                     text);
 
+                Console.WriteLine(message);
                 if (!string.IsNullOrWhiteSpace(_options.LogPath))
-                    File.AppendAllText(_options.LogPath, message);
+                    File.AppendAllText(_options.LogPath, message + '\n');
 
                 return message;
             }
