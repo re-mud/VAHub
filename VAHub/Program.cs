@@ -7,6 +7,7 @@ using VAHub.Plugins;
 PluginFactory CreatePluginFactory(OptionsManager optionsManager)
 {
     PluginFactory factory = new();
+    factory.Register("program", (path, manifest) => new ProgramPlugin(path, manifest));
     return factory;
 }
 
