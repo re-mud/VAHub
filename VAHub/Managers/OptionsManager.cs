@@ -14,7 +14,7 @@ public class OptionsManager
     {
         if (string.IsNullOrEmpty(jsonFilePath))
         {
-            Logger.Error("Путь к файлу кофигурации не может быть пустым");
+            Logger.Error("Путь к файлу конфигурации не может быть пустым");
             throw new ArgumentNullException(nameof(jsonFilePath));
         }
 
