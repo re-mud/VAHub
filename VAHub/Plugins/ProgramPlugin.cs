@@ -13,8 +13,6 @@ public class ProgramPlugin : BasePlugin
 
     public override Response Execute(string path)
     {
-        Response response = new Response();
-
         try
         {
             Process.Start(new ProcessStartInfo()
@@ -23,14 +21,11 @@ public class ProgramPlugin : BasePlugin
                 CreateNoWindow = true,
                 UseShellExecute = false
             });
-            response.Status = Status.Success;
+            return new(Status.Success);
         }
         catch (Exception e) 
         {
-            response.Message = e.Message;
-            response.Status = Status.Error;
+            return new(Status.Error, e.Message);
         }
-
-        return response;
     }
 }
