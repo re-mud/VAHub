@@ -32,11 +32,24 @@ public class App
         _mre.Set();
     }
 
+    /// <exception cref="ArgumentNullException"></exception>
+    public void HandleResponse(Response response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+
+        if (!string.IsNullOrEmpty(response.SpeakText))
+        {
+            _core.Speak(response.SpeakText);
+        }
+    }
+
     private void Core_RecognitionCompleted(string text)
     {
         try
         {
             Response response = _pluginManager.Handle(text);
+
+            HandleResponse(response);
 
             Logger.Debug($"Статус: {response.Status}, сообщение: {response.Message}");
         }

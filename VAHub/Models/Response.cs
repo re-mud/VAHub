@@ -10,4 +10,7 @@ public class Response
 
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
+
+    [JsonPropertyName("speak_text")]
+    public string SpeakText { get; set; } = string.Empty;
 }
