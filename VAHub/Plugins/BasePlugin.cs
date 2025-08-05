@@ -34,5 +34,5 @@ public abstract class BasePlugin
         return null;
     }
 
-    public abstract Response Execute(string path);
+    public abstract Response Execute(string command, string text);
 }

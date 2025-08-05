@@ -30,7 +30,7 @@ public class PluginManager
 
                 try
                 {
-                    return plugin.Execute(result);
+                    return plugin.Execute(result, text);
                 }
                 catch (Exception e)
                 {
