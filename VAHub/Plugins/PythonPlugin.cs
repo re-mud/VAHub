@@ -38,7 +38,7 @@ public class PythonPlugin : BasePlugin
             }
             catch (Exception e)
             {
-                return new(Status.Error, $"Не удалось загрузить модуль '{moduleName}' \n{e}");
+                return new(Status.Error, $"Не удалось загрузить модуль '{moduleName}'");
             }
         }
 
@@ -70,7 +70,7 @@ public class PythonPlugin : BasePlugin
         using (Py.GIL())
         {
             dynamic sys = Py.Import("sys");
-            if (!sys.path.Contains(path))
+            if (sys.path.count(path).As<int>() == 0)
                 sys.path.insert(0, path);
 
             module = Py.Import(moduleName.Substring(0, moduleName.Length - 3));
