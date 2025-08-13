@@ -8,11 +8,13 @@ public class Response
     public Response(
         Status status = default, 
         string message = "",
-        string speakText = "")
+        ActionType action = ActionType.None,
+        string data = "")
     {
         Status = status;
         Message = message;
-        SpeakText = speakText;
+        Action = action;
+        Data = data;
     }
 
     [JsonPropertyName("status")]
@@ -21,6 +23,9 @@ public class Response
     [JsonPropertyName("message")]
     public string Message { get; set; }
 
-    [JsonPropertyName("speak_text")]
-    public string SpeakText { get; set; }
+    [JsonPropertyName("action")]
+    public ActionType Action { get; set; }
+
+    [JsonPropertyName("data")]
+    public string Data { get; set; }
 }

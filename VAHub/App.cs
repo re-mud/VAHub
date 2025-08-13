@@ -1,4 +1,5 @@
 ﻿using VAHub.Core;
+using VAHub.Enums;
 using VAHub.Logging;
 using VAHub.Models;
 using VAHub.Plugins;
@@ -37,9 +38,25 @@ public class App
     {
         ArgumentNullException.ThrowIfNull(response);
 
-        if (!string.IsNullOrEmpty(response.SpeakText))
+        switch (response.Action)
         {
-            _core.Speak(response.SpeakText);
+            case ActionType.None:
+                {
+                    break;
+                }
+
+            case ActionType.Speak:
+                {
+                    if (response.Data != "")
+                        _core.Speak(response.Data);
+                    break;
+                }
+
+            case ActionType.Close:
+                {
+                    Exit();
+                    break;
+                }
         }
     }
 
