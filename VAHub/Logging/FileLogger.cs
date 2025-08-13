@@ -4,7 +4,7 @@ public class FileLogger : ILogger
 {
     private readonly FileLoggerOptions _options;
     private readonly object _lockFile = new();
-    private readonly StreamWriter _writer;
+    private readonly StreamWriter? _writer;
 
     public FileLogger(FileLoggerOptions options)
     {
@@ -29,7 +29,7 @@ public class FileLogger : ILogger
                 string message = string.Format(_options.MessageFormat, time.ToString(_options.DateFormat), level.ToString(), text);
 
                 Console.WriteLine(message);
-                _writer.WriteLine(message);
+                _writer?.WriteLine(message);
 
                 return message;
             }
