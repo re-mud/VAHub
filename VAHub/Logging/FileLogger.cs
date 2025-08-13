@@ -12,7 +12,7 @@ public class FileLogger : ILogger
 
         if (!string.IsNullOrWhiteSpace(_options.LogPath))
         {
-            FileStream fileStream = new FileStream(_options.LogPath, FileMode.Append, FileAccess.Write, FileShare.Read, 4096, false);
+            FileStream fileStream = new FileStream(_options.LogPath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, false);
             _writer = new StreamWriter(fileStream)
             {
                 AutoFlush = true
