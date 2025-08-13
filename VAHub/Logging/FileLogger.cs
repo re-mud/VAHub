@@ -4,21 +4,20 @@ public class FileLogger : ILogger
 {
     private readonly FileLoggerOptions _options;
     private readonly object _lockFile = new();
+    private readonly StreamWriter _writer;
 
-    /// <param name="logPath">
-    /// Disable logging to file if equal to null.
-    /// </param>
-    /// <param name="messageFormat">
-    /// {0} - date<br></br>
-    /// {1} - log level<br></br>
-    /// {2} - message
-    /// </param>
     public FileLogger(FileLoggerOptions options)
     {
         _options = options;
 
         if (!string.IsNullOrWhiteSpace(_options.LogPath))
-            CreateFileLog(_options.LogPath);
+        {
+            FileStream fileStream = new FileStream(_options.LogPath, FileMode.Append, FileAccess.Write, FileShare.Read, 4096, false);
+            _writer = new StreamWriter(fileStream)
+            {
+                AutoFlush = true
+            };
+        }
     }
 
     public string Log(string text, LogLevel level, DateTime time)
@@ -27,14 +26,10 @@ public class FileLogger : ILogger
         {
             try
             {
-                string message = string.Format(_options.MessageFormat,
-                    time.ToString(_options.DateFormat),
-                    level.ToString(),
-                    text);
+                string message = string.Format(_options.MessageFormat, time.ToString(_options.DateFormat), level.ToString(), text);
 
                 Console.WriteLine(message);
-                if (!string.IsNullOrWhiteSpace(_options.LogPath))
-                    File.AppendAllText(_options.LogPath, message + '\n');
+                _writer.WriteLine(message);
 
                 return message;
             }
@@ -45,14 +40,5 @@ public class FileLogger : ILogger
                 return ex.Message;
             }
         }
-    }
-
-    private void CreateFileLog(string logPath)
-    {
-        string? directoryName = Path.GetDirectoryName(logPath);
-        if (directoryName != null)
-            Directory.CreateDirectory(directoryName);
-
-        File.WriteAllText(logPath, string.Empty);
     }
 }
