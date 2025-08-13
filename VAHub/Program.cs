@@ -1,4 +1,5 @@
-﻿using VAHub;
+﻿using Python.Runtime;
+using VAHub;
 using VAHub.Core;
 using VAHub.Logging;
 using VAHub.Managers;
@@ -8,6 +9,7 @@ PluginFactory CreatePluginFactory(OptionsManager optionsManager)
 {
     PluginFactory factory = new();
     factory.Register("program", (path, manifest) => new ProgramPlugin(path, manifest));
+    factory.Register("python", (path, manifest) => new PythonPlugin(path, manifest));
     return factory;
 }
 
@@ -31,9 +33,25 @@ void SetupLogger(OptionsManager optionsManager)
     Logger.SetLogger(logger);
 }
 
+void ConfigurePython(OptionsManager optionsManager)
+{
+    PythonOptions options = optionsManager.Get<PythonOptions>("Python");
+
+    if (!File.Exists(options.PythonDLLPath))
+    {
+        Logger.Warn("Python DLL не найден");
+        return;
+    }
+
+    Runtime.PythonDLL = options.PythonDLLPath;
+    PythonEngine.Initialize();
+    PythonEngine.BeginAllowThreads();
+}
+
 OptionsManager optionsManager = new OptionsManager("appsettings.json", true);
 SetupLogger(optionsManager);
 
+ConfigurePython(optionsManager);
 VACore core = CreateCore(optionsManager);
 PluginFactory pluginFactory = CreatePluginFactory(optionsManager);
 PluginManager pluginManager = CreatePluginManager(optionsManager, pluginFactory);
