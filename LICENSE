@@ -31,3 +31,7 @@ Vosk
 NAudio
 - License: MIT
 - URL: https://github.com/naudio/NAudio
+
+pythonnet
+- License: MIT
+- URL: https://github.com/pythonnet/pythonnet
