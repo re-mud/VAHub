@@ -3,6 +3,7 @@
 public static class Logger
 {
     public static event EventHandler<LogEventArgs>? LogEvent;
+    public static bool IsDebug = false;
     private static ILogger? _logger;
 
     public static void SetLogger(ILogger? logger) => _logger = logger;
@@ -20,6 +21,7 @@ public static class Logger
     private static void Log(string text, LogLevel level)
     {
         if (_logger == null) return;
+        if (!IsDebug && level == LogLevel.Debug) return;
 
         DateTime time = DateTime.Now;
         string message = _logger.Log(text, level, time);

@@ -43,6 +43,11 @@ CommandManager CreateCommandManager(OptionsManager optionsManager, Dictionary<st
 
 void SetupLogger(OptionsManager optionsManager)
 {
+    if (args.Length != 0 && args.Contains("--debug"))
+    {
+        Logger.IsDebug = true;
+    }
+
     FileLoggerOptions fileLoggerOptions = optionsManager.Get<FileLoggerOptions>(nameof(FileLogger));
     FileLogger logger = new(fileLoggerOptions);
     Logger.SetLogger(logger);

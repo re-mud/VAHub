@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VAHub": {
+      "commandName": "Project",
+      "commandLineArgs": "--debug"
+    }
+  }
+}
