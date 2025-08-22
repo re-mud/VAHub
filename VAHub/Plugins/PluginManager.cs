@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using VAHub.Enums;
+using VAHub.Commands;
 using VAHub.Logging;
 using VAHub.Models;
 
@@ -7,96 +7,88 @@ namespace VAHub.Plugins;
 
 public class PluginManager
 {
-    private List<BasePlugin> _plugins = [];
-    private PluginFactory _pluginFactory;
     private PluginManagerOptions _options;
+    private List<PluginModel> _plugins = [];
 
-    public PluginManager(PluginManagerOptions options, PluginFactory pluginFactory)
+    public PluginManager(PluginManagerOptions options)
     {
         _options = options;
-        _pluginFactory = pluginFactory;
-
-        LoadPlugins(_options.PluginsPath);
     }
 
-    public Response Handle(string text)
+    public void LoadPlugins()
     {
-        foreach (var plugin in _plugins)
+        if (!Directory.Exists(_options.PluginsPath))
         {
-            string? result = plugin.Handle(text);
-            if (result != null)
-            {
-                Logger.Debug($"Исполнение '{result}' из '{plugin.Manifest.Name}'");
-
-                try
-                {
-                    return plugin.Execute(result, text);
-                }
-                catch (Exception e)
-                {
-                    return new Response()
-                    {
-                        Status = Status.Error,
-                        Message = e.ToString()
-                    };
-                }
-            }
-        }
-
-        return new Response()
-        {
-            Status = Status.NotFound,
-            Message = $"Команда '{text}' не найдена"
-        };
-    }
-
-    /// <exception cref="ArgumentNullException"></exception>
-    public void AddPlugin(BasePlugin plugin)
-    {
-        ArgumentNullException.ThrowIfNull(plugin, nameof(plugin));
-
-        _plugins.Add(plugin);
-    }
-
-    public void LoadPlugins(string dirPath)
-    {
-        if (!Directory.Exists(dirPath))
-        {
-            Logger.Warn($"Не удалось найти папку '{dirPath}'");
+            Logger.Warn($"Не удалось найти папку '{_options.PluginsPath}'");
             return;
         }
 
-        string[] directories = Directory.GetDirectories(dirPath);
+        if (_plugins.Count > 0)
+        {
+            _plugins.Clear();
+        }
+
+        string[] directories = Directory.GetDirectories(_options.PluginsPath);
 
         foreach (string directory in directories)
         {
-            string manifestPath = Path.Combine(directory, "manifest.json");
-            if (!File.Exists(manifestPath)) continue;
+            bool state = LoadPlugin(directory);
 
-            Manifest manifest;
-            try
+            if (state)
             {
-                string json = File.ReadAllText(manifestPath);
-                manifest = JsonSerializer.Deserialize<Manifest>(json) ?? throw new ArgumentNullException();
+                Logger.Debug($"Загружен плагин '{directory}'");
             }
-            catch
+            else
             {
-                Logger.Warn($"Ошибка форматирования '{manifestPath}'");
-                continue;
+                Logger.Warn($"Не удалось загрузить плагин '{directory}'");
             }
-
-            BasePlugin plugin;
-            try
-            {
-                plugin = _pluginFactory.Create(manifest.Type, directory, manifest);
-            }
-            catch
-            {
-                Logger.Warn($"Не удалось загрузить плагин '{directory}' с типом '{manifest.Type}'");
-                continue;
-            }
-
-            AddPlugin(plugin);
         }
+    }
+
+    public bool LoadPlugin(string dirPath)
+    {
+        string manifestPath = Path.Combine(dirPath, "manifest.json");
+
+        if (!File.Exists(manifestPath)) return false;
+
+        Manifest manifest;
+        try
+        {
+            string json = File.ReadAllText(manifestPath);
+            manifest = JsonSerializer.Deserialize<Manifest>(json) ?? throw new ArgumentNullException();
+        }
+        catch
+        {
+            return false;
+        }
+
+        _plugins.Add(new(manifest, dirPath));
+        return true;
+    }
+
+    public PluginModel[] GetPlugins()
+    {
+        return _plugins.ToArray();
+    }
+
+    public Dictionary<string, CommandModel> GetCommands()
+    {
+        Dictionary<string, CommandModel> commands = [];
+
+        foreach (var plugin in _plugins)
+        {
+            foreach (var command in plugin.Manifest.Commands)
+            {
+                foreach (var text in command.Key.Split('|'))
+                {
+                    commands.Add(
+                        text,
+                        new(command.Value, plugin.Manifest.Type, plugin.Path)
+                    );
+                }
+            }
+        }
+
+        return commands;
     }
 }

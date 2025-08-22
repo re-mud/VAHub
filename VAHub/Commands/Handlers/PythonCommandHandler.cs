@@ -1,44 +1,48 @@
 ﻿using System.Text.Json;
 using Python.Runtime;
-
-using VAHub.Enums;
 using VAHub.Models;
+using VAHub.Enums;
+using VAHub.Logging;
 
-namespace VAHub.Plugins;
+namespace VAHub.Commands.Handlers;
 
-public class PythonPlugin : BasePlugin
+public class PythonCommandHandler : BaseCommandHandler
 {
     private Dictionary<string, PyObject> _pyModules = new();
 
-    public PythonPlugin(string path, Manifest manifest) : base(path, manifest)
+    public PythonCommandHandler(PythonCommandHandlerOptions options)
     {
-
+        Runtime.PythonDLL = options.PythonDLLPath;
+        PythonEngine.Initialize();
+        PythonEngine.BeginAllowThreads();
     }
 
-    public override Response Execute(string command, string text)
+    public override Response Execute(string executeData, string path, string commandText)
     {
-        if (string.IsNullOrEmpty(command))
+        if (string.IsNullOrEmpty(executeData))
             return new(Status.Error, "Пустая команда");
 
-        string[] parts = command.Split(':');
+        string[] parts = executeData.Split(':');
         if (parts.Length != 2)
             return new(Status.Error, "Неверный формат команды");
 
         string moduleName = parts[0];
         string funcName = parts[1];
+
         if (!_pyModules.TryGetValue(moduleName, out PyObject? pyModule))
         {
             try
             {
-                pyModule = LoadModule(PluginDir, moduleName);
+                LoadModule(path, moduleName);
+                pyModule = _pyModules[moduleName];
             }
             catch (FileNotFoundException)
             {
-                return new(Status.Error, $"Не найден указанный файл '{moduleName}'");
+                return new(Status.Error, $"Не найден указанный файл '{Path.Combine(path, moduleName)}'");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return new(Status.Error, $"Не удалось загрузить модуль '{moduleName}'");
+                return new(Status.Error, $"Не удалось загрузить модуль '{Path.Combine(path, moduleName)}'");
             }
         }
 
@@ -48,7 +52,7 @@ public class PythonPlugin : BasePlugin
             using (Py.GIL())
             {
                 dynamic func = pyModule.GetAttr(funcName);
-                json = func(text);
+                json = func(commandText);
             }
 
             return JsonSerializer.Deserialize<Response>(json) ?? throw new JsonException();
@@ -61,22 +65,19 @@ public class PythonPlugin : BasePlugin
 
     /// <exception cref="Exception"></exception>
     /// <exception cref="FileNotFoundException"></exception>
-    private PyObject LoadModule(string path, string moduleName)
+    private void LoadModule(string path, string moduleName)
     {
         string modulePath = Path.Combine(path, moduleName);
         if (!File.Exists(modulePath)) throw new FileNotFoundException(modulePath);
 
-        PyObject module;
         using (Py.GIL())
         {
             dynamic sys = Py.Import("sys");
             if (sys.path.count(path).As<int>() == 0)
                 sys.path.insert(0, path);
 
-            module = Py.Import(moduleName.Substring(0, moduleName.Length - 3));
+            PyObject module = Py.Import(Path.GetFileNameWithoutExtension(moduleName));
             _pyModules[moduleName] = module;
         }
-
-        return module;
     }
 }

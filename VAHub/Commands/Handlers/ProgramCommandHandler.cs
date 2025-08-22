@@ -1,27 +1,29 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using VAHub.Enums;
 using VAHub.Models;
+using VAHub.Enums;
 
-namespace VAHub.Plugins;
+namespace VAHub.Commands.Handlers;
 
-public class ProgramPlugin : BasePlugin
+public class ProgramCommandHandler : BaseCommandHandler
 {
-    public ProgramPlugin(string path, Manifest manifest) : base(path, manifest)
+    public override Response Execute(string executeData, string path, string commandText)
     {
+        if (string.IsNullOrEmpty(executeData))
+            return new(Status.Error, "Пустая команда");
 
-    }
+        string[] parts = ParseArgs(executeData);
+        ReplaceArg(parts, "{text}", $"\"{commandText}\"");
 
-    public override Response Execute(string command, string text)
-    {
+        string file = Path.Combine(path, parts[0]);
+
+        if (!File.Exists(file))
+            return new(Status.Error, $"Не найден исполняемый файл '{file}'");
+
+        string args = string.Join(" ", parts.Skip(1));
+
         try
         {
-            string[] parts = ParseArgs(command);
-            ReplaceArg(parts, "{text}", $"\"{text}\"");
-
-            string file = Path.Combine(PluginDir, parts[0]);
-            string args = string.Join(" ", parts.Skip(1));
-
             Process.Start(new ProcessStartInfo()
             {
                 FileName = file,
@@ -29,6 +31,7 @@ public class ProgramPlugin : BasePlugin
                 CreateNoWindow = true,
                 UseShellExecute = false
             });
+
             return new(Status.Success);
         }
         catch (Exception e)

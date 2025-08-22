@@ -1,4 +1,5 @@
-﻿using VAHub.Core;
+﻿using VAHub.Commands;
+using VAHub.Core;
 using VAHub.Enums;
 using VAHub.Logging;
 using VAHub.Models;
@@ -10,12 +11,12 @@ public class App
 {
     private VACore _core;
     private ManualResetEventSlim _mre;
-    private PluginManager _pluginManager;
+    private CommandManager _commandManager;
 
-    public App(VACore core, PluginManager pluginManager)
+    public App(VACore core, CommandManager commandManager)
     {
         _core = core;
-        _pluginManager = pluginManager;
+        _commandManager = commandManager;
         _mre = new ManualResetEventSlim(false);
 
         _core.RecognitionCompleted += Core_RecognitionCompleted;
@@ -24,7 +25,7 @@ public class App
     public void Run()
     {
         _core.Start();
-        Logger.Info("Приложение запущено");
+        Logger.Debug("Приложение запущено");
         _mre.Wait();
     }
 
@@ -64,11 +65,21 @@ public class App
     {
         try
         {
-            Response response = _pluginManager.Handle(text);
+            Response response = _commandManager.Handle(text);
 
-            HandleResponse(response);
+            if (response.Status == Status.Error)
+            {
+                if (response.Message != "")
+                    Logger.Error(response.Message);
+            }
+            else
+            {
+                if (response.Status == Status.Success)
+                    HandleResponse(response);
 
-            Logger.Debug($"Статус: {response.Status}, сообщение: {response.Message}");
+                if (response.Message != "")
+                    Logger.Debug(response.Message);
+            }
         }
         catch (Exception e)
         {

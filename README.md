@@ -13,7 +13,7 @@
 ### Плагины (необязательно)
 1. Для python-плагинов добавьте в `appsettings.json`:
 ```json
-"Python": {
+"PythonCommandHandler": {
   "PythonDLLPath": "путь_к_библиотеке"
 }
 ```

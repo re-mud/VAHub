@@ -1,0 +1,62 @@
+﻿using VAHub.Commands.Handlers;
+using VAHub.Models;
+using VAHub.Enums;
+
+namespace VAHub.Commands;
+
+public class CommandManager
+{
+    private Dictionary<string, CommandModel> _commands = [];
+    private Dictionary<string, BaseCommandHandler> _handlers = [];
+
+    public Response Handle(string text)
+    {
+        if (!_commands.TryGetValue(text, out CommandModel? command))
+        {
+            return new(Status.NotFound, $"Команда '{text}' не найдена");
+        }
+        if (!_handlers.TryGetValue(command.Type, out BaseCommandHandler? handler))
+        {
+            return new(Status.NotFound, $"Незарегистрированный тип '{command.Type}'");
+        }
+
+        try
+        {
+            return handler.Execute(command.ExecuteData, command.RelativePath, text);
+        }
+        catch (Exception e)
+        {
+            return new(Status.Error, $"Необработанная ошибка: {e}");
+        }
+    }
+
+    public void SetCommands(Dictionary<string, CommandModel> commands)
+    {
+        _commands = new Dictionary<string, CommandModel>(commands);
+    }
+
+    public void AddCommand(string text, CommandModel model)
+    {
+        _commands.Add(text, model);
+    }
+
+    public void ClearCommands()
+    {
+        _commands.Clear();
+    }
+
+    public void SetHandlers(Dictionary<string, BaseCommandHandler> handlers)
+    {
+        _handlers = new Dictionary<string, BaseCommandHandler>(handlers);
+    }
+
+    public void AddHandler(string type, BaseCommandHandler handler)
+    {
+        _handlers.Add(type, handler);
+    }
+
+    public void ClearHandlers()
+    {
+        _handlers.Clear();
+    }
+}

@@ -1,17 +1,10 @@
-﻿using Python.Runtime;
-using VAHub;
-using VAHub.Core;
-using VAHub.Logging;
+﻿using VAHub.Commands;
 using VAHub.Managers;
 using VAHub.Plugins;
-
-PluginFactory CreatePluginFactory(OptionsManager optionsManager)
-{
-    PluginFactory factory = new();
-    factory.Register("program", (path, manifest) => new ProgramPlugin(path, manifest));
-    factory.Register("python", (path, manifest) => new PythonPlugin(path, manifest));
-    return factory;
-}
+using VAHub.Logging;
+using VAHub.Core;
+using VAHub;
+using VAHub.Commands.Handlers;
 
 VACore CreateCore(OptionsManager optionsManager)
 {
@@ -20,41 +13,47 @@ VACore CreateCore(OptionsManager optionsManager)
     return coreFactory.CreateCore(coreOptions);
 }
 
-PluginManager CreatePluginManager(OptionsManager optionsManager, PluginFactory pluginFactory)
+PluginManager CreatePluginManager(OptionsManager optionsManager)
 {
-    PluginManager pluginManager = new(optionsManager.Get<PluginManagerOptions>(nameof(PluginManager)), pluginFactory);
+    PluginManager pluginManager = new(optionsManager.Get<PluginManagerOptions>(nameof(PluginManager)));
+    pluginManager.LoadPlugins();
     return pluginManager;
+}
+
+CommandManager CreateCommandManager(OptionsManager optionsManager, Dictionary<string, CommandModel> commands)
+{
+    CommandManager commandManager = new();
+    commandManager.SetCommands(commands);
+
+    try
+    {
+        PythonCommandHandler pythonCommandHandler = new(
+            optionsManager.Get<PythonCommandHandlerOptions>(nameof(PythonCommandHandler)));
+        commandManager.AddHandler("python", pythonCommandHandler);
+    }
+    catch
+    {
+        Logger.Error("Не удалось инициализировать обработчик python");
+    }
+
+    commandManager.AddHandler("program", new ProgramCommandHandler());
+
+    return commandManager;
 }
 
 void SetupLogger(OptionsManager optionsManager)
 {
-    FileLoggerOptions fileLoggerOptions = optionsManager.Get<FileLoggerOptions>("FileLogger");
+    FileLoggerOptions fileLoggerOptions = optionsManager.Get<FileLoggerOptions>(nameof(FileLogger));
     FileLogger logger = new(fileLoggerOptions);
     Logger.SetLogger(logger);
-}
-
-void ConfigurePython(OptionsManager optionsManager)
-{
-    PythonOptions options = optionsManager.Get<PythonOptions>("Python");
-
-    if (!File.Exists(options.PythonDLLPath))
-    {
-        Logger.Warn("Python DLL не найден");
-        return;
-    }
-
-    Runtime.PythonDLL = options.PythonDLLPath;
-    PythonEngine.Initialize();
-    PythonEngine.BeginAllowThreads();
 }
 
 OptionsManager optionsManager = new OptionsManager("appsettings.json", true);
 SetupLogger(optionsManager);
 
-ConfigurePython(optionsManager);
 VACore core = CreateCore(optionsManager);
-PluginFactory pluginFactory = CreatePluginFactory(optionsManager);
-PluginManager pluginManager = CreatePluginManager(optionsManager, pluginFactory);
-App app = new(core, pluginManager);
+PluginManager pluginManager = CreatePluginManager(optionsManager);
+CommandManager commandManager = CreateCommandManager(optionsManager, pluginManager.GetCommands());
+App app = new(core, commandManager);
 
 app.Run();
