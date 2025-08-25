@@ -6,6 +6,5 @@ namespace VAHub.Enums;
 public enum ActionType
 {
     None,
-    Close,
-    Speak
+    Close
 }
