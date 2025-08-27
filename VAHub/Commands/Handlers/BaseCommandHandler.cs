@@ -4,5 +4,5 @@ namespace VAHub.Commands.Handlers;
 
 public abstract class BaseCommandHandler
 {
-    public abstract Response Execute(string executeData, string path, string commandText);
+    public abstract Report Execute(string executeData, string path, string commandText);
 }

@@ -37,16 +37,16 @@ public class App
     {
         try
         {
-            Response response = _commandManager.Handle(text);
+            Report report = _commandManager.Handle(text);
 
-            if (response.Message != "")
-                HandleMessage(response);
-            if (response.Status != Status.Success)
+            if (report.Message != "")
+                HandleMessage(report);
+            if (report.Status != Status.Success || report.Response == null)
                 return;
-            if (response.Action != ActionType.None)
-                HandleAction(response);
-            if (response.Speak != "")
-                _core.Speak(response.Speak);
+            if (report.Response.Action != ActionType.None)
+                HandleAction(report.Response.Action);
+            if (report.Response.Speak != "")
+                _core.Speak(report.Response.Speak);
         }
         catch (Exception e)
         {
@@ -54,28 +54,25 @@ public class App
         }
     }
 
-    private void HandleAction(Response response)
+    private void HandleAction(ActionType action)
     {
-        switch (response.Action)
+        switch (action)
         {
-            case ActionType.None:
-                break;
-
             case ActionType.Close:
                 Exit();
                 break;
         }
     }
 
-    private void HandleMessage(Response response)
+    private void HandleMessage(Report report)
     {
-        if (response.Status == Status.Error)
+        if (report.Status == Status.Error)
         {
-            Logger.Error(response.Message);
+            Logger.Error(report.Message);
         }
         else
         {
-            Logger.Debug(response.Message);
+            Logger.Debug(report.Message);
         }
     }
 }

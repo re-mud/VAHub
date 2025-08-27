@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using VAHub.Models;
-using VAHub.Enums;
 
 namespace VAHub.Commands.Handlers;
 
 public class ProgramCommandHandler : BaseCommandHandler
 {
-    public override Response Execute(string executeData, string path, string commandText)
+    public override Report Execute(string executeData, string path, string commandText)
     {
         if (string.IsNullOrEmpty(executeData))
-            return new(Status.Error, "Пустая команда");
+            return Report.Error("Пустая команда");
 
         string[] parts = ParseArgs(executeData);
         ReplaceArg(parts, "{text}", $"\"{commandText}\"");
@@ -18,7 +17,7 @@ public class ProgramCommandHandler : BaseCommandHandler
         string file = Path.Combine(path, parts[0]);
 
         if (!File.Exists(file))
-            return new(Status.Error, $"Не найден исполняемый файл '{file}'");
+            return Report.Error($"Не найден исполняемый файл '{file}'");
 
         string args = string.Join(" ", parts.Skip(1));
 
@@ -32,11 +31,11 @@ public class ProgramCommandHandler : BaseCommandHandler
                 UseShellExecute = false
             });
 
-            return new(Status.Success);
+            return Report.Success();
         }
         catch (Exception e)
         {
-            return new(Status.Error, e.Message);
+            return Report.Error(e.Message);
         }
     }
 

@@ -17,14 +17,14 @@ public class PythonCommandHandler : BaseCommandHandler
         PythonEngine.BeginAllowThreads();
     }
 
-    public override Response Execute(string executeData, string path, string commandText)
+    public override Report Execute(string executeData, string path, string commandText)
     {
         if (string.IsNullOrEmpty(executeData))
-            return new(Status.Error, "Пустая команда");
+            return Report.Error("Пустая команда");
 
         string[] parts = executeData.Split(':');
         if (parts.Length != 2)
-            return new(Status.Error, "Неверный формат команды");
+            return Report.Error("Неверный формат команды");
 
         string moduleName = parts[0];
         string funcName = parts[1];
@@ -38,11 +38,11 @@ public class PythonCommandHandler : BaseCommandHandler
             }
             catch (FileNotFoundException)
             {
-                return new(Status.Error, $"Не найден указанный файл '{Path.Combine(path, moduleName)}'");
+                return Report.NotFound($"Не найден указанный файл '{Path.Combine(path, moduleName)}'");
             }
             catch (Exception)
             {
-                return new(Status.Error, $"Не удалось загрузить модуль '{Path.Combine(path, moduleName)}'");
+                return Report.Error($"Не удалось загрузить модуль '{Path.Combine(path, moduleName)}'");
             }
         }
 
@@ -55,11 +55,12 @@ public class PythonCommandHandler : BaseCommandHandler
                 json = func(commandText);
             }
 
-            return JsonSerializer.Deserialize<Response>(json) ?? throw new JsonException();
+            Response response = JsonSerializer.Deserialize<Response>(json) ?? throw new JsonException();
+            return Report.Success("",  response, CommandType.Python);
         }
         catch (Exception e)
         {
-            return new(Status.Error, e.Message);
+            return Report.Success(e.Message);
         }
     }
 

@@ -9,15 +9,15 @@ public class CommandManager
     private Dictionary<string, CommandModel> _commands = [];
     private Dictionary<CommandType, BaseCommandHandler> _handlers = [];
 
-    public Response Handle(string text)
+    public Report Handle(string text)
     {
         if (!_commands.TryGetValue(text, out CommandModel? command))
         {
-            return new(Status.NotFound, $"Команда '{text}' не найдена");
+            return Report.NotFound($"Команда '{text}' не найдена");
         }
         if (!_handlers.TryGetValue(command.Type, out BaseCommandHandler? handler))
         {
-            return new(Status.NotFound, $"Незарегистрированный тип '{command.Type}'");
+            return Report.NotFound($"Незарегистрированный тип '{command.Type}'");
         }
 
         try
@@ -26,7 +26,7 @@ public class CommandManager
         }
         catch (Exception e)
         {
-            return new(Status.Error, $"Необработанная ошибка: {e}");
+            return Report.Error($"Необработанная ошибка: {e}");
         }
     }
 
