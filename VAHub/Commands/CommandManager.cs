@@ -7,7 +7,7 @@ namespace VAHub.Commands;
 public class CommandManager
 {
     private Dictionary<string, CommandModel> _commands = [];
-    private Dictionary<string, BaseCommandHandler> _handlers = [];
+    private Dictionary<CommandType, BaseCommandHandler> _handlers = [];
 
     public Response Handle(string text)
     {
@@ -45,12 +45,12 @@ public class CommandManager
         _commands.Clear();
     }
 
-    public void SetHandlers(Dictionary<string, BaseCommandHandler> handlers)
+    public void SetHandlers(Dictionary<CommandType, BaseCommandHandler> handlers)
     {
-        _handlers = new Dictionary<string, BaseCommandHandler>(handlers);
+        _handlers = new Dictionary<CommandType, BaseCommandHandler>(handlers);
     }
 
-    public void AddHandler(string type, BaseCommandHandler handler)
+    public void AddHandler(CommandType type, BaseCommandHandler handler)
     {
         _handlers.Add(type, handler);
     }

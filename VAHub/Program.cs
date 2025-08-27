@@ -1,10 +1,10 @@
-﻿using VAHub.Commands;
+﻿using VAHub.Commands.Handlers;
+using VAHub.Commands;
 using VAHub.Managers;
 using VAHub.Plugins;
 using VAHub.Logging;
 using VAHub.Core;
 using VAHub;
-using VAHub.Commands.Handlers;
 
 VACore CreateCore(OptionsManager optionsManager)
 {
@@ -29,14 +29,14 @@ CommandManager CreateCommandManager(OptionsManager optionsManager, Dictionary<st
     {
         PythonCommandHandler pythonCommandHandler = new(
             optionsManager.Get<PythonCommandHandlerOptions>(nameof(PythonCommandHandler)));
-        commandManager.AddHandler("python", pythonCommandHandler);
+        commandManager.AddHandler(CommandType.Python, pythonCommandHandler);
     }
     catch
     {
         Logger.Error("Не удалось инициализировать обработчик python");
     }
 
-    commandManager.AddHandler("program", new ProgramCommandHandler());
+    commandManager.AddHandler(CommandType.Program, new ProgramCommandHandler());
 
     return commandManager;
 }

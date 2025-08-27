@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using VAHub.Commands;
 
 namespace VAHub.Models;
 
@@ -14,7 +15,7 @@ public class Manifest
     public string Version { get; set; } = string.Empty;
 
     [JsonPropertyName("type")]
-    public string Type { get; set; } = string.Empty;
+    public CommandType Type { get; set; } = CommandType.None;
 
     [JsonPropertyName("commands")]
     public Dictionary<string, string> Commands { get; set; } = [];

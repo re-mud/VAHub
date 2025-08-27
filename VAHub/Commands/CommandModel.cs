@@ -4,9 +4,9 @@ public class CommandModel
 {
     public readonly string ExecuteData;
     public readonly string RelativePath;
-    public readonly string Type;
+    public readonly CommandType Type;
 
-    public CommandModel(string executeData, string type, string relativePath)
+    public CommandModel(string executeData, CommandType type, string relativePath)
     {
         RelativePath = relativePath;
         ExecuteData = executeData;
