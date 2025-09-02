@@ -10,14 +10,17 @@ public class FileLogger : ILogger
     {
         _options = options;
 
-        if (!string.IsNullOrWhiteSpace(_options.LogPath))
+        if (string.IsNullOrWhiteSpace(_options.LogPath)) return;
+
+        var directory = Path.GetDirectoryName(_options.LogPath);
+        if (directory != null && !Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
+        FileStream fileStream = new FileStream(_options.LogPath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, false);
+        _writer = new StreamWriter(fileStream)
         {
-            FileStream fileStream = new FileStream(_options.LogPath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, false);
-            _writer = new StreamWriter(fileStream)
-            {
-                AutoFlush = true
-            };
-        }
+            AutoFlush = true
+        };
     }
 
     public string Log(string text, LogLevel level, DateTime time)
