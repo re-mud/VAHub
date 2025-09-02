@@ -1,4 +1,5 @@
 ﻿using VAHub.Input;
+using VAHub.Logging;
 using VAHub.Recognition;
 using VAHub.Synthesis;
 
@@ -47,12 +48,26 @@ public class VACore
 
     public void Speak(string text)
     {
-        _synthesizer.Speak(text);
+        try
+        {
+            _synthesizer.Speak(text);
+        }
+        catch
+        {
+            Logger.Error("Не удалось запустить синтезировать речь");
+        }
     }
 
     public void Start()
     {
-        _microphone.Start();
+        try
+        {
+            _microphone.Start();
+        }
+        catch
+        {
+            Logger.Error("Не удалось запустить запись с микрофона");
+        }
     }
 
     public void Stop()
