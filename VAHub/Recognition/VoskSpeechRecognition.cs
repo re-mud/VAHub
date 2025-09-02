@@ -15,6 +15,12 @@ public class VoskSpeechRecognition : ISpeechRecognition
     {
         _options = options;
 
+        if (!Directory.Exists(_options.ModelPath))
+        {
+            Logger.Error($"Модель не найдена по пути {_options.ModelPath}");
+            throw new FileNotFoundException($"Model not found at {_options.ModelPath}");
+        }
+
         _model = new(_options.ModelPath);
         _recognizer = new(_model, _options.SampleRate);
     }
