@@ -37,6 +37,7 @@ CommandManager CreateCommandManager(OptionsManager optionsManager, Dictionary<st
     }
 
     commandManager.AddHandler(CommandType.Program, new ProgramCommandHandler());
+    commandManager.AddHandler(CommandType.Json, new JsonCommandHandler());
 
     return commandManager;
 }

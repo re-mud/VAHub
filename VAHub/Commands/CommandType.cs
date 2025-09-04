@@ -7,5 +7,6 @@ public enum CommandType
 {
     None,
     Program,
-    Python
+    Python,
+    Json
 }
