@@ -41,6 +41,13 @@ CommandManager CreateCommandManager(OptionsManager optionsManager, Dictionary<st
     return commandManager;
 }
 
+App CreateApp(VACore core, CommandManager commandManager, OptionsManager optionsManager)
+{
+    AppOptions options = optionsManager.Get<AppOptions>(nameof(App));
+
+    return new(core, commandManager, options);
+}
+
 void SetupLogger(OptionsManager optionsManager)
 {
     if (args.Length != 0 && args.Contains("--debug"))
@@ -59,6 +66,6 @@ SetupLogger(optionsManager);
 VACore core = CreateCore(optionsManager);
 PluginManager pluginManager = CreatePluginManager(optionsManager);
 CommandManager commandManager = CreateCommandManager(optionsManager, pluginManager.GetCommands());
-App app = new(core, commandManager);
+App app = CreateApp(core, commandManager, optionsManager);
 
 app.Run();
