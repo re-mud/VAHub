@@ -81,10 +81,15 @@ public class PluginManager
             {
                 foreach (var text in command.Key.Split('|'))
                 {
-                    commands.Add(
+                    bool state = commands.TryAdd(
                         text,
                         new(command.Value, plugin.Manifest.Type, plugin.Path)
                     );
+
+                    if (!state)
+                    {
+                        Logger.Warn($"Команда '{text}' из '{plugin.Path}' уже была добавлена");
+                    }
                 }
             }
         }
