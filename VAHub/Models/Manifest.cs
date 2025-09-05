@@ -6,17 +6,17 @@ namespace VAHub.Models;
 public class Manifest
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; }
 
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("version")]
-    public string Version { get; set; } = string.Empty;
+    public required string Version { get; set; }
 
     [JsonPropertyName("type")]
-    public CommandType Type { get; set; } = CommandType.None;
+    public required CommandType Type { get; set; }
 
     [JsonPropertyName("commands")]
-    public Dictionary<string, string> Commands { get; set; } = [];
+    public required Dictionary<string, string> Commands { get; set; }
 }
