@@ -32,24 +32,15 @@ public class PluginManager
 
         foreach (string directory in directories)
         {
-            bool state = LoadPlugin(directory);
-
-            if (state)
-            {
-                Logger.Debug($"Загружен плагин '{directory}'");
-            }
-            else
-            {
-                Logger.Warn($"Не удалось загрузить плагин '{directory}'");
-            }
+            LoadPlugin(directory);
         }
     }
 
-    public bool LoadPlugin(string dirPath)
+    public void LoadPlugin(string dirPath)
     {
         string manifestPath = Path.Combine(dirPath, "manifest.json");
 
-        if (!File.Exists(manifestPath)) return false;
+        if (!File.Exists(manifestPath)) return;
 
         Manifest manifest;
         try
@@ -59,11 +50,12 @@ public class PluginManager
         }
         catch
         {
-            return false;
+            Logger.Warn($"Не удалось загрузить манифест '{dirPath}'");
+            return;
         }
 
         _plugins.Add(new(manifest, dirPath));
-        return true;
+        Logger.Debug($"Загружен плагин {manifest.Name} (v{manifest.Version})");
     }
 
     public PluginModel[] GetPlugins()
