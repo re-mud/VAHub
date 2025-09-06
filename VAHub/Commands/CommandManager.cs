@@ -9,26 +9,41 @@ public class CommandManager
     private Dictionary<string, CommandModel> _commands = [];
     private Dictionary<CommandType, BaseCommandHandler> _handlers = [];
 
-    public CommandManagerResult Handle(string text)
+    public CommandManagerResult Handle(string text, CommandContext? context = null)
     {
-        if (!_commands.TryGetValue(text, out CommandModel? command))
+        CommandModel? command;
+        if (context == null)
         {
-            return new(Status.NotFound, message:$"Команда '{text}' не найдена");
+            if (!_commands.TryGetValue(text, out command))
+            {
+                return new(Status.NotFound, message: $"Команда '{text}' не найдена");
+            }
         }
-        if (!_handlers.TryGetValue(command.Type, out BaseCommandHandler? handler))
+        else
+        {
+            command = new CommandModel(context.CommandData, context.CommandType, context.CommandPath);
+        }
+
+        BaseCommandHandler? handler;
+        if (!_handlers.TryGetValue(command.Type, out handler))
         {
             return new(Status.NotFound, message: $"Незарегистрированный тип '{command.Type}'");
         }
 
         try
         {
-            CommandResult commandResult = handler.Execute(command.ExecuteData, command.RelativePath, text);
-            return new(commandResult.Status, command.Type, commandResult.Message, commandResult.CommandResponse);
+            return HandleCommand(handler, command, text);
         }
         catch (Exception e)
         {
             return new(Status.Error, message: $"Необработанная ошибка: {e}");
         }
+    }
+
+    private CommandManagerResult HandleCommand(BaseCommandHandler handler, CommandModel command, string text)
+    {
+        CommandResult commandResult = handler.Execute(command.ExecuteData, command.RelativePath, text);
+        return new(commandResult.Status, command.Type, command.RelativePath, commandResult.Message, commandResult.CommandResponse);
     }
 
     public void SetCommands(Dictionary<string, CommandModel> commands)

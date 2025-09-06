@@ -10,4 +10,7 @@ public class CommandResponse
 
     [JsonPropertyName("speak")]
     public string Speak { get; set; } = string.Empty;
+
+    [JsonPropertyName("context")]
+    public string Context { get; set; } = string.Empty;
 }

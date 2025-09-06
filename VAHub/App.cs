@@ -15,6 +15,7 @@ public class App
     private readonly bool _isActivationPhraseEnabled;
     private readonly TimeSpan _activationTimeout;
     private DateTime _activationEnd;
+    private CommandContext? _context;
 
     public App(VACore core, CommandManager commandManager, AppOptions options)
     {
@@ -73,13 +74,15 @@ public class App
         CommandManagerResult result;
         try
         {
-            result = _commandManager.Handle(text);
+            result = _commandManager.Handle(text, _context);
         }
         catch (Exception e)
         {
             Logger.Error($"Произошла неожиданная ошибка '{e.Message}'");
             return;
         }
+
+        _context = null;
 
         HandleResult(result);
     }
@@ -91,10 +94,9 @@ public class App
 
         HandleMessage(result);
 
-        if (result.Status == Status.Success && result.CommandResponse != null)
+        if (result.Status == Status.Success)
         {
-            HandleResponseAction(result.CommandResponse);
-            HandleResponseSpeak(result.CommandResponse);
+            HandleResponse(result);
         }
     }
 
@@ -114,17 +116,12 @@ public class App
         return false;
     }
 
-    private void HandleResponseSpeak(CommandResponse response)
+    private void HandleResponse(CommandManagerResult result)
     {
-        if (!string.IsNullOrEmpty(response.Speak))
-        {
-            _core.Speak(response.Speak);
-        }
-    }
+        if (result.CommandResponse == null) return;
 
-    private void HandleResponseAction(CommandResponse response)
-    {
-        switch (response.Action)
+        // Action
+        switch (result.CommandResponse.Action)
         {
             case ActionType.None:
                 break;
@@ -132,6 +129,21 @@ public class App
             case ActionType.Close:
                 Exit();
                 break;
+        }
+
+        // Speak
+        if (!string.IsNullOrEmpty(result.CommandResponse.Speak))
+        {
+            _core.Speak(result.CommandResponse.Speak);
+        }
+
+        // Context
+        if (!string.IsNullOrEmpty(result.CommandResponse.Context) && 
+            result.CommandType.HasValue && 
+            result.CommandPath != null)
+        {
+            Logger.Debug($"Установлен контекст '{result.CommandResponse.Context}'");
+            _context = new(result.CommandType.Value, result.CommandResponse.Context, result.CommandPath);
         }
     }
 
