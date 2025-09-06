@@ -54,6 +54,9 @@ public class PythonCommandHandler : BaseCommandHandler
                 json = func(commandText);
             }
 
+            if (json == null) 
+                return new(Status.Success);
+
             CommandResponse result = JsonSerializer.Deserialize<CommandResponse>(json) ?? throw new JsonException();
             return new(Status.Success, commandResponse: result);
         }
