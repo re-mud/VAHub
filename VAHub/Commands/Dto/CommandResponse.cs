@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using VAHub.Enums;
 
-namespace VAHub.Models;
+namespace VAHub.Commands.DTO;
 
-public class Response
+public class CommandResponse
 {
     [JsonPropertyName("action")]
     public ActionType Action { get; set; } = ActionType.None;

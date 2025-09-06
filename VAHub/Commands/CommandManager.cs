@@ -1,5 +1,5 @@
 ﻿using VAHub.Commands.Handlers;
-using VAHub.Models;
+using VAHub.Commands.DTO;
 using VAHub.Enums;
 
 namespace VAHub.Commands;
@@ -9,24 +9,25 @@ public class CommandManager
     private Dictionary<string, CommandModel> _commands = [];
     private Dictionary<CommandType, BaseCommandHandler> _handlers = [];
 
-    public Report Handle(string text)
+    public CommandManagerResult Handle(string text)
     {
         if (!_commands.TryGetValue(text, out CommandModel? command))
         {
-            return Report.NotFound($"Команда '{text}' не найдена");
+            return new(Status.NotFound, message:$"Команда '{text}' не найдена");
         }
         if (!_handlers.TryGetValue(command.Type, out BaseCommandHandler? handler))
         {
-            return Report.NotFound($"Незарегистрированный тип '{command.Type}'");
+            return new(Status.NotFound, message: $"Незарегистрированный тип '{command.Type}'");
         }
 
         try
         {
-            return handler.Execute(command.ExecuteData, command.RelativePath, text);
+            CommandResult commandResult = handler.Execute(command.ExecuteData, command.RelativePath, text);
+            return new(commandResult.Status, command.Type, commandResult.Message, commandResult.CommandResponse);
         }
         catch (Exception e)
         {
-            return Report.Error($"Необработанная ошибка: {e}");
+            return new(Status.Error, message: $"Необработанная ошибка: {e}");
         }
     }
 

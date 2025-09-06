@@ -1,8 +1,8 @@
-﻿using VAHub.Models;
+﻿using VAHub.Commands.DTO;
 
 namespace VAHub.Commands.Handlers;
 
 public abstract class BaseCommandHandler
 {
-    public abstract Report Execute(string executeData, string path, string commandText);
+    public abstract CommandResult Execute(string executeData, string path, string commandText);
 }

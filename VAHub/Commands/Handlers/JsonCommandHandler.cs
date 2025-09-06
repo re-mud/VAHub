@@ -1,24 +1,25 @@
 ﻿using System.Text.Json;
-using VAHub.Models;
+using VAHub.Commands.DTO;
+using VAHub.Enums;
 
 namespace VAHub.Commands.Handlers;
 
 public class JsonCommandHandler : BaseCommandHandler
 {
-    public override Report Execute(string executeData, string path, string commandText)
+    public override CommandResult Execute(string executeData, string path, string commandText)
     {
         if (string.IsNullOrEmpty(executeData))
-            return Report.Error("Пустая команда");
+            return new(Status.Error, "Пустая команда");
 
         try
         {
-            Response response = JsonSerializer.Deserialize<Response>(executeData) ?? throw new JsonException();
+            CommandResponse result = JsonSerializer.Deserialize<CommandResponse>(executeData) ?? throw new JsonException();
             
-            return Report.Success("", response, CommandType.Json);
+            return new(Status.Success, commandResponse: result);
         }
         catch
         {
-            return Report.Error("Команда имеет неверный формат");
+            return new(Status.Error, "Команда имеет неверный формат");
         }
     }
 }

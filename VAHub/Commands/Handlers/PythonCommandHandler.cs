@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
 using Python.Runtime;
-using VAHub.Models;
+using VAHub.Commands.DTO;
 using VAHub.Enums;
-using VAHub.Logging;
 
 namespace VAHub.Commands.Handlers;
 
@@ -17,14 +16,14 @@ public class PythonCommandHandler : BaseCommandHandler
         PythonEngine.BeginAllowThreads();
     }
 
-    public override Report Execute(string executeData, string path, string commandText)
+    public override CommandResult Execute(string executeData, string path, string commandText)
     {
         if (string.IsNullOrEmpty(executeData))
-            return Report.Error("Пустая команда");
+            return new(Status.Error, "Пустая команда");
 
         string[] parts = executeData.Split(':');
         if (parts.Length != 2)
-            return Report.Error("Неверный формат команды");
+            return new(Status.Error, "Неверный формат команды");
 
         string moduleName = parts[0];
         string funcName = parts[1];
@@ -38,11 +37,11 @@ public class PythonCommandHandler : BaseCommandHandler
             }
             catch (FileNotFoundException)
             {
-                return Report.NotFound($"Не найден указанный файл '{Path.Combine(path, moduleName)}'");
+                return new(Status.Error, $"Не найден указанный файл '{Path.Combine(path, moduleName)}'");
             }
             catch (Exception)
             {
-                return Report.Error($"Не удалось загрузить модуль '{Path.Combine(path, moduleName)}'");
+                return new(Status.Error, $"Не удалось загрузить модуль '{Path.Combine(path, moduleName)}'");
             }
         }
 
@@ -55,12 +54,12 @@ public class PythonCommandHandler : BaseCommandHandler
                 json = func(commandText);
             }
 
-            Response response = JsonSerializer.Deserialize<Response>(json) ?? throw new JsonException();
-            return Report.Success("",  response, CommandType.Python);
+            CommandResponse result = JsonSerializer.Deserialize<CommandResponse>(json) ?? throw new JsonException();
+            return new(Status.Success, commandResponse: result);
         }
         catch (Exception e)
         {
-            return Report.Success(e.Message);
+            return new(Status.Error, e.Message);
         }
     }
 

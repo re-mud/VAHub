@@ -1,6 +1,6 @@
-﻿using VAHub.Commands;
+﻿using VAHub.Commands.DTO;
+using VAHub.Commands;
 using VAHub.Logging;
-using VAHub.Models;
 using VAHub.Enums;
 using VAHub.Core;
 
@@ -70,10 +70,10 @@ public class App
             }
         }
 
-        Report report;
+        CommandManagerResult result;
         try
         {
-            report = _commandManager.Handle(text);
+            result = _commandManager.Handle(text);
         }
         catch (Exception e)
         {
@@ -81,25 +81,21 @@ public class App
             return;
         }
 
-        HandleReport(report);
+        HandleResult(result);
     }
 
-    private void HandleReport(Report report)
+    private void HandleResult(CommandManagerResult result)
     {
-        if (_isActivationPhraseEnabled && _options.isExtendActivationAfterCommand && report.Status != Status.NotFound)
+        if (_isActivationPhraseEnabled && _options.isExtendActivationAfterCommand && result.Status != Status.NotFound)
             _activationEnd = DateTime.UtcNow + _activationTimeout;
 
-        if (!string.IsNullOrEmpty(report.Message))
-            HandleMessage(report);
+        HandleMessage(result);
 
-        if (report.Status != Status.Success || report.Response == null)
-            return;
-
-        if (report.Response.Action != ActionType.None)
-            HandleAction(report.Response.Action);
-
-        if (!string.IsNullOrEmpty(report.Response.Speak))
-            _core.Speak(report.Response.Speak);
+        if (result.Status == Status.Success && result.CommandResponse != null)
+        {
+            HandleResponseAction(result.CommandResponse);
+            HandleResponseSpeak(result.CommandResponse);
+        }
     }
 
     private bool IsActivatedCommand(string text, out string command)
@@ -118,25 +114,38 @@ public class App
         return false;
     }
 
-    private void HandleAction(ActionType action)
+    private void HandleResponseSpeak(CommandResponse response)
     {
-        switch (action)
+        if (!string.IsNullOrEmpty(response.Speak))
         {
+            _core.Speak(response.Speak);
+        }
+    }
+
+    private void HandleResponseAction(CommandResponse response)
+    {
+        switch (response.Action)
+        {
+            case ActionType.None:
+                break;
+
             case ActionType.Close:
                 Exit();
                 break;
         }
     }
 
-    private void HandleMessage(Report report)
+    private void HandleMessage(CommandManagerResult result)
     {
-        if (report.Status == Status.Error)
+        if (string.IsNullOrEmpty(result.Message)) return;
+
+        if (result.Status == Status.Error)
         {
-            Logger.Error(report.Message);
+            Logger.Error(result.Message);
         }
         else
         {
-            Logger.Debug(report.Message);
+            Logger.Debug(result.Message);
         }
     }
 }
