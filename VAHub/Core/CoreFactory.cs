@@ -23,6 +23,8 @@ public class CoreFactory
             () => CreateWithOptions<VoskSpeechRecognition, VoskSpeechRecognitionOptions>());
         _speechSynthesizersFactories.Add(nameof(WindowsSpeechSynthesizer),
             () => CreateWithOptions<WindowsSpeechSynthesizer, WindowsSpeechSynthesizerOptions>());
+        _speechSynthesizersFactories.Add(nameof(ConsoleSpeechSynthesizer),
+            () => new ConsoleSpeechSynthesizer());
     }
 
     public VACore CreateCore(CoreOptions options)
