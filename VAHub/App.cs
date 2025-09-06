@@ -56,7 +56,7 @@ public class App
     {
         if (string.IsNullOrEmpty(text)) return;
 
-        if (_isActivationPhraseEnabled)
+        if (_context == null && _isActivationPhraseEnabled)
         {
             if (IsActivatedCommand(text, out string command))
             {
