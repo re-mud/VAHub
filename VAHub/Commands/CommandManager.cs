@@ -1,27 +1,35 @@
 ﻿using VAHub.Commands.Handlers;
 using VAHub.Commands.DTO;
+using VAHub.Search.Trie;
 using VAHub.Enums;
 
 namespace VAHub.Commands;
 
 public class CommandManager
 {
-    private Dictionary<string, CommandModel> _commands = [];
+    private Trie<CommandModel> _commands = new();
     private Dictionary<CommandType, BaseCommandHandler> _handlers = [];
 
     public CommandManagerResult Handle(string text, CommandContext? context = null)
     {
-        CommandModel? command;
+        CommandModel command;
+        string remainingText;
+
         if (context == null)
         {
-            if (!_commands.TryGetValue(text, out command))
+            TrieStartWithResult<CommandModel>? result = _commands.StartWith(text);
+
+            if (result == null)
             {
                 return new(Status.NotFound, message: $"Команда '{text}' не найдена");
             }
+            command = result.Value;
+            remainingText = result.RemainingText;
         }
         else
         {
             command = new CommandModel(context.CommandData, context.CommandType, context.CommandPath);
+            remainingText = text;
         }
 
         BaseCommandHandler? handler;
@@ -32,7 +40,7 @@ public class CommandManager
 
         try
         {
-            return HandleCommand(handler, command, text);
+            return HandleCommand(handler, command, remainingText);
         }
         catch (Exception e)
         {
@@ -48,7 +56,12 @@ public class CommandManager
 
     public void SetCommands(Dictionary<string, CommandModel> commands)
     {
-        _commands = new Dictionary<string, CommandModel>(commands);
+        _commands = new Trie<CommandModel>();
+
+        foreach (var command in commands)
+        {
+            _commands.Add(command.Key, command.Value);
+        }
     }
 
     public void AddCommand(string text, CommandModel model)
@@ -58,7 +71,7 @@ public class CommandManager
 
     public void ClearCommands()
     {
-        _commands.Clear();
+        _commands = new();
     }
 
     public void SetHandlers(Dictionary<CommandType, BaseCommandHandler> handlers)
