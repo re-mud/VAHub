@@ -2,7 +2,7 @@
   "profiles": {
     "VAHub": {
       "commandName": "Project",
-      "commandLineArgs": "--debug"
+      "commandLineArgs": "--verbose -c"
     }
   }
 }
