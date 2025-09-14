@@ -2,7 +2,8 @@
 
 public class FileLoggerOptions
 {
-    public string LogPath { get; set; } = "Logs\\app.log";
+    public string LogPath { get; set; } = "Logs\\";
     public string MessageFormat { get; set; } = "[{0}] [{1}] {2}";
-    public string DateFormat { get; set; } = "yyyy-MM-dd HH:mm:ss";
+    public string LogDateFormat { get; set; } = "yyyy-MM-dd HH:mm:ss";
+    public string FileDateFormat { get; set; } = "yyyy-MM-dd_HH-mm-ss";
 }

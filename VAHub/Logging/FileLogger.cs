@@ -10,13 +10,12 @@ public class FileLogger : ILogger
     {
         _options = options;
 
-        if (string.IsNullOrWhiteSpace(_options.LogPath)) return;
-
-        var directory = Path.GetDirectoryName(_options.LogPath);
-        if (directory != null && !Directory.Exists(directory))
-            Directory.CreateDirectory(directory);
-
-        FileStream fileStream = new FileStream(_options.LogPath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, false);
+        if (!Directory.Exists(_options.LogPath))
+        {
+            Directory.CreateDirectory(_options.LogPath);
+        }
+        string filePath = Path.Combine(_options.LogPath, DateTime.Now.ToString(_options.FileDateFormat) + ".log");
+        FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, false);
         _writer = new StreamWriter(fileStream)
         {
             AutoFlush = true
@@ -29,7 +28,7 @@ public class FileLogger : ILogger
         {
             try
             {
-                string message = string.Format(_options.MessageFormat, time.ToString(_options.DateFormat), level.ToString(), text);
+                string message = string.Format(_options.MessageFormat, time.ToString(_options.LogDateFormat), level.ToString(), text);
 
                 Console.WriteLine(message);
                 _writer?.WriteLine(message);
