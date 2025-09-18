@@ -20,7 +20,7 @@ ArgsParser parser = serviceProvider.GetRequiredService<ArgsParser>();
 parser.Parse(args);
 logger.SetLevelEnabled(LogLevel.Debug, parser.GetFlag("verbose"));
 if (parser.GetFlag("help")) 
-    logger.Help(parser.GetHelp());
+    logger.Help("Общие настройки:\n" + parser.GetHelp());
 foreach (var hdl in serviceProvider.GetServices<IArgsHandler>())
     hdl.Initialize();
 

@@ -15,7 +15,7 @@ public class PluginArgsHandler(ArgsParser parser, ILogger logger, PluginManager 
         if (_parser.GetFlag("commands"))
         {
             Dictionary<string, CommandModel> _commands = _pluginManager.GetCommands();
-            _logger.Help("загруженные команды:\n- " + string.Join("\n- ", _commands.Keys));
+            _logger.Help("Загруженные команды:\n- " + string.Join("\n- ", _commands.Keys));
         }
     }
 }
