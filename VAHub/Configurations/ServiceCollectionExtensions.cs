@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
 
         // args handlers
         services.AddTransient<IArgsHandler, PluginArgsHandler>();
+        services.AddTransient<IArgsHandler, AppArgsHandler>();
 
         // services
         services.AddKeyedTransient<ISpeechSynthesizer, WindowsSpeechSynthesizer>(nameof(WindowsSpeechSynthesizer));
