@@ -14,6 +14,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
 
     public VoskSpeechRecognition(ILogger logger, VoskSpeechRecognitionOptions options)
     {
+        Vosk.Vosk.SetLogLevel(-1);
         _logger = logger;
         _options = options;
 
