@@ -2,5 +2,15 @@
 
 public interface ILogger
 {
-    string Log(string text, LogLevel level, DateTime time);
+    void SetLevelEnabled(LogLevel level, bool enabled);
+
+    public void Info(string text);
+
+    public void Debug(string text);
+
+    public void Warn(string text);
+
+    public void Error(string text);
+
+    public void Fatal(string text);
 }

@@ -6,8 +6,10 @@ public class ArgsParser
     public readonly bool ShowCommands;
     public readonly bool ShowHelp;
 
-    public ArgsParser(string[] args)
+    public ArgsParser(string[]? args = null)
     {
+        args ??= [];
+
         if (args.Length == 0) return;
 
         IsVerbose = args.Contains("--verbose") || args.Contains("-v");

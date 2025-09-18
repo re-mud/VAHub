@@ -32,8 +32,7 @@ public class CommandManager
             remainingText = text;
         }
 
-        BaseCommandHandler? handler;
-        if (!_handlers.TryGetValue(command.Type, out handler))
+        if (!_handlers.TryGetValue(command.Type, out BaseCommandHandler? handler))
         {
             return new(Status.NotFound, message: $"Незарегистрированный тип '{command.Type}'");
         }

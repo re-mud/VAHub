@@ -14,12 +14,14 @@ public class App
     private readonly AppOptions _options;
     private readonly bool _isActivationPhraseEnabled;
     private readonly TimeSpan _activationTimeout;
+    private readonly ILogger _logger;
     private DateTime _activationEnd;
     private CommandContext? _context;
 
-    public App(VACore core, CommandManager commandManager, AppOptions options)
+    public App(VACore core, CommandManager commandManager, ILogger logger, AppOptions options)
     {
         _core = core;
+        _logger = logger;
         _options = options;
         _commandManager = commandManager;
         _mre = new ManualResetEventSlim(false);
@@ -32,17 +34,17 @@ public class App
     public void Run()
     {
         _core.Start();
-        Logger.Debug("Приложение запущено");
+        _logger.Debug("Приложение запущено");
 
         if (string.IsNullOrEmpty(_options.ActivationPhrase))
         {
-            Logger.Debug($"Фраза активации выключена");
+            _logger.Debug($"Фраза активации выключена");
         }
         else
         {
-            Logger.Debug($"Фраза активации '{_options.ActivationPhrase}'");
-            Logger.Debug($"Время активации '{_options.ActivationTimeoutSeconds}'");
-            Logger.Debug($"Продление активации '{_options.isExtendActivationAfterCommand}'");
+            _logger.Debug($"Фраза активации '{_options.ActivationPhrase}'");
+            _logger.Debug($"Время активации '{_options.ActivationTimeoutSeconds}'");
+            _logger.Debug($"Продление активации '{_options.IsExtendActivationAfterCommand}'");
         }
         _mre.Wait();
     }
@@ -66,7 +68,7 @@ public class App
             }
             else if (_activationEnd < DateTime.UtcNow)
             {
-                Logger.Debug($"Вне активации '{text}'");
+                _logger.Debug($"Вне активации '{text}'");
                 return;
             }
         }
@@ -78,7 +80,7 @@ public class App
         }
         catch (Exception e)
         {
-            Logger.Error($"Произошла неожиданная ошибка '{e.Message}'");
+            _logger.Error($"Произошла неожиданная ошибка '{e.Message}'");
             return;
         }
 
@@ -89,7 +91,7 @@ public class App
 
     private void HandleResult(CommandManagerResult result)
     {
-        if (_isActivationPhraseEnabled && _options.isExtendActivationAfterCommand && result.Status != Status.NotFound)
+        if (_isActivationPhraseEnabled && _options.IsExtendActivationAfterCommand && result.Status != Status.NotFound)
             _activationEnd = DateTime.UtcNow + _activationTimeout;
 
         HandleMessage(result);
@@ -138,11 +140,11 @@ public class App
         }
 
         // Context
-        if (!string.IsNullOrEmpty(result.CommandResponse.Context) && 
-            result.CommandType.HasValue && 
+        if (!string.IsNullOrEmpty(result.CommandResponse.Context) &&
+            result.CommandType.HasValue &&
             result.CommandPath != null)
         {
-            Logger.Debug($"Установлен контекст '{result.CommandResponse.Context}'");
+            _logger.Debug($"Установлен контекст '{result.CommandResponse.Context}'");
             _context = new(result.CommandType.Value, result.CommandResponse.Context, result.CommandPath);
         }
     }
@@ -153,11 +155,11 @@ public class App
 
         if (result.Status == Status.Error)
         {
-            Logger.Error(result.Message);
+            _logger.Error(result.Message);
         }
         else
         {
-            Logger.Debug(result.Message);
+            _logger.Debug(result.Message);
         }
     }
 }

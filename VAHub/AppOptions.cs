@@ -4,5 +4,5 @@ public class AppOptions
 {
     public string ActivationPhrase { set; get; } = "";
     public int ActivationTimeoutSeconds { set; get; } = 15;
-    public bool isExtendActivationAfterCommand { set; get; } = false;
+    public bool IsExtendActivationAfterCommand { set; get; } = false;
 }

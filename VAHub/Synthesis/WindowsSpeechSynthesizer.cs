@@ -7,14 +7,17 @@ namespace VAHub.Synthesis;
 
 public class WindowsSpeechSynthesizer : ISpeechSynthesizer
 {
-    private SpeechSynthesizer _speechSynthesizer;
-    private WindowsSpeechSynthesizerOptions _options;
+    private readonly SpeechSynthesizer _speechSynthesizer;
+    private readonly WindowsSpeechSynthesizerOptions _options;
+    private readonly ILogger _logger;
 
-    public WindowsSpeechSynthesizer(WindowsSpeechSynthesizerOptions options)
+    public WindowsSpeechSynthesizer(ILogger logger, WindowsSpeechSynthesizerOptions options)
     {
+        _logger = logger;
+
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            Logger.Error($"Синтез речи с '{nameof(WindowsSpeechSynthesizer)}' доступно только в Windows");
+            _logger.Error($"Синтез речи с '{nameof(WindowsSpeechSynthesizer)}' доступно только в Windows");
             throw new PlatformNotSupportedException("Available on Windows only.");
         }
 

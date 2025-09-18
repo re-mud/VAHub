@@ -1,8 +1,7 @@
 ﻿namespace VAHub.Core;
 
-public class CoreOptions
+public class VACoreOptions
 {
-    public string MicrophoneKey { get; set; } = "NAudioMicrophone";
     public string RecognitionKey { get; set; } = "VoskSpeechRecognition";
     public string SynthesizerKey { get; set; } = "WindowsSpeechSynthesizer";
 }

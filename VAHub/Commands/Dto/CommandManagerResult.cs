@@ -1,22 +1,15 @@
 ﻿using VAHub.Enums;
 
-namespace VAHub.Commands.DTO
+namespace VAHub.Commands.DTO;
+
+public class CommandManagerResult(
+    Status status,
+    CommandType? commandType = null,
+    string? commandPath = null,
+    string? message = null,
+    CommandResponse? commandResponse = null) : CommandResult(status, message, commandResponse)
 {
-    public class CommandManagerResult : CommandResult
-    {
-        public CommandType? CommandType { get; set; }
+    public CommandType? CommandType { get; set; } = commandType;
 
-        public string? CommandPath { get; set; }
-
-        public CommandManagerResult(
-            Status status,
-            CommandType? commandType = null,
-            string? commandPath = null,
-            string? message = null,
-            CommandResponse? commandResponse = null) : base(status, message, commandResponse)
-        {
-            CommandType = commandType;
-            CommandPath = commandPath;
-        }
-    }
+    public string? CommandPath { get; set; } = commandPath;
 }

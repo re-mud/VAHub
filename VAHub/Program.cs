@@ -1,12 +1,18 @@
-﻿using VAHub.Managers;
-using VAHub.Parsers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using VAHub.Configurations;
 using VAHub;
 
 
 
-OptionsManager optionsManager = new("appsettings.json", true);
-ArgsParser argsParser = new(args);
-AppInitializer appInitializer = new(optionsManager, argsParser);
-App app = appInitializer.InitializeApp();
+IConfiguration configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", true)
+    .Build();
+IServiceProvider serviceProvider = new ServiceCollection()
+    .AddServices(configuration)
+    .AddArgs(args)
+    .BuildServiceProvider();
 
+App app = serviceProvider.GetRequiredService<App>();
 app.Run();

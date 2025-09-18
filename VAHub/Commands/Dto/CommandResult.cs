@@ -2,21 +2,14 @@
 
 namespace VAHub.Commands.DTO;
 
-public class CommandResult
+public class CommandResult(
+    Status status,
+    string? message = null,
+    CommandResponse? commandResponse = null)
 {
-    public CommandResponse? CommandResponse { get; set; }
+    public CommandResponse? CommandResponse { get; set; } = commandResponse;
 
-    public string? Message { get; set; }
+    public string? Message { get; set; } = message;
 
-    public Status Status { get; set; }
-
-    public CommandResult(
-        Status status,
-        string? message = null,
-        CommandResponse? commandResponse = null)
-    {
-        Status = status;
-        Message = message;
-        CommandResponse = commandResponse;
-    }
+    public Status Status { get; set; } = status;
 }

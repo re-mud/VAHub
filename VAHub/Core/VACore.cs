@@ -1,7 +1,7 @@
-﻿using VAHub.Input;
-using VAHub.Logging;
-using VAHub.Recognition;
+﻿using VAHub.Recognition;
 using VAHub.Synthesis;
+using VAHub.Logging;
+using VAHub.Input;
 
 namespace VAHub.Core;
 
@@ -9,16 +9,18 @@ public class VACore
 {
     public event Action<string>? RecognitionCompleted;
 
+    private readonly ILogger _logger;
     private IMicrophone _microphone;
     private ISpeechRecognition _recognition;
     private ISpeechSynthesizer _synthesizer;
 
-    public VACore(IMicrophone microphone, ISpeechRecognition recognition, ISpeechSynthesizer synthesizer)
+    public VACore(
+        ILogger logger,
+        IMicrophone microphone,
+        ISpeechRecognition recognition,
+        ISpeechSynthesizer synthesizer)
     {
-        ArgumentNullException.ThrowIfNull(microphone, nameof(microphone));
-        ArgumentNullException.ThrowIfNull(recognition, nameof(recognition));
-        ArgumentNullException.ThrowIfNull(synthesizer, nameof(synthesizer));
-
+        _logger = logger;
         SetMicrophone(microphone);
         SetRecognition(recognition);
         SetSynthesizer(synthesizer);
@@ -26,8 +28,7 @@ public class VACore
 
     public void SetMicrophone(IMicrophone microphone)
     {
-        if (microphone == null) 
-            throw new ArgumentNullException(nameof(microphone));
+        ArgumentNullException.ThrowIfNull(microphone, nameof(microphone));
         if (_microphone != null)
             _microphone.DataAvailable -= Microphone_DataAvailable;
 
@@ -54,7 +55,7 @@ public class VACore
         }
         catch
         {
-            Logger.Error("Не удалось запустить синтезировать речь");
+            _logger.Error("Не удалось запустить синтезировать речь");
         }
     }
 
@@ -66,7 +67,7 @@ public class VACore
         }
         catch
         {
-            Logger.Error("Не удалось запустить запись с микрофона");
+            _logger.Error("Не удалось запустить запись с микрофона");
         }
     }
 

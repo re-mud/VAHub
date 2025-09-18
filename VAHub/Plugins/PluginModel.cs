@@ -1,15 +1,7 @@
-﻿using VAHub.Models;
+﻿namespace VAHub.Plugins;
 
-namespace VAHub.Plugins;
-
-public class PluginModel
+public class PluginModel(Manifest manifest, string path)
 {
-    public PluginModel(Manifest manifest, string path)
-    {
-        Manifest = manifest;
-        Path = path;
-    }
-
-    public Manifest Manifest { get; set; }
-    public string Path { get; set; }
+    public Manifest Manifest { get; set; } = manifest;
+    public string Path { get; set; } = path;
 }

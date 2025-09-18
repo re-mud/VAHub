@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using VAHub.Commands;
 
-namespace VAHub.Models;
+namespace VAHub.Plugins;
 
 public class Manifest
 {

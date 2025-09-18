@@ -1,15 +1,10 @@
 ﻿namespace VAHub.Commands;
 
-public class CommandModel
+public class CommandModel(string executeData, CommandType type, string relativePath)
 {
-    public readonly string ExecuteData;
-    public readonly string RelativePath;
-    public readonly CommandType Type;
+    public readonly string ExecuteData = executeData;
 
-    public CommandModel(string executeData, CommandType type, string relativePath)
-    {
-        RelativePath = relativePath;
-        ExecuteData = executeData;
-        Type = type;
-    }
+    public readonly string RelativePath = relativePath;
+
+    public readonly CommandType Type = type;
 }

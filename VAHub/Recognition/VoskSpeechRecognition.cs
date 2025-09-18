@@ -1,23 +1,25 @@
-﻿using Vosk;
-using System.Text.Json;
+﻿using System.Text.Json;
 using VAHub.Logging;
+using Vosk;
 
 namespace VAHub.Recognition;
 
 public class VoskSpeechRecognition : ISpeechRecognition
 {
-    private VoskSpeechRecognitionOptions _options;
+    private readonly VoskSpeechRecognitionOptions _options;
+    private readonly ILogger _logger;
+    private readonly Model _model;
     private VoskRecognizer _recognizer;
-    private Model _model;
     private int _dataProcessed = 0;
 
-    public VoskSpeechRecognition(VoskSpeechRecognitionOptions options)
+    public VoskSpeechRecognition(ILogger logger, VoskSpeechRecognitionOptions options)
     {
+        _logger = logger;
         _options = options;
 
         if (!Directory.Exists(_options.ModelPath))
         {
-            Logger.Error($"Модель не найдена по пути {_options.ModelPath}");
+            _logger.Error($"Модель не найдена по пути {_options.ModelPath}");
             throw new FileNotFoundException($"Model not found at {_options.ModelPath}");
         }
 
@@ -30,7 +32,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
     {
         if (length > buffer.Length)
         {
-            Logger.Error("Некорректный размер буфера");
+            _logger.Error("Некорректный размер буфера");
             throw new ArgumentException("Invalid buffer length");
         }
 
@@ -43,7 +45,7 @@ public class VoskSpeechRecognition : ISpeechRecognition
     {
         if (_dataProcessed > _options.ThresholdSec * _options.SampleRate)
         {
-            Logger.Debug("Сброс Vosk распознавателя");
+            _logger.Debug("Сброс Vosk распознавателя");
             _recognizer.Dispose();
             _recognizer = new(_model, _options.SampleRate);
             _dataProcessed = 0;

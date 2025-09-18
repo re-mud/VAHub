@@ -1,17 +1,10 @@
 ﻿namespace VAHub.Commands;
 
-public class CommandContext
+public class CommandContext(CommandType commandType, string commandData, string commandPath)
 {
-    public CommandType CommandType;
+    public CommandType CommandType = commandType;
 
-    public string CommandData;
+    public string CommandData = commandData;
 
-    public string CommandPath;
-
-    public CommandContext(CommandType commandType, string commandData, string commandPath)
-    {
-        CommandType = commandType;
-        CommandData = commandData;
-        CommandPath = commandPath;
-    }
+    public string CommandPath = commandPath;
 }

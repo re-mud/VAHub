@@ -14,9 +14,7 @@ public class Trie<T>
         foreach (char c in key)
         {
             if (!node.Children.ContainsKey(c))
-            {
                 node.Children[c] = new();
-            }
             node = node.Children[c];
         }
         if (node.IsEnd)
@@ -36,20 +34,16 @@ public class Trie<T>
         {
             if (!node.Children.ContainsKey(c))
             {
-                if (node.IsEnd)
-                {
+                if (node.Value != null && node.IsEnd)
                     return new TrieStartWithResult<T>(text.Substring(i), node.Value);
-                }
                 else
-                {
                     return null;
-                }
             }
             node = node.Children[c];
             i++;
         }
 
-        if (node.IsEnd)
+        if (node.Value != null && node.IsEnd)
             return new TrieStartWithResult<T>("", node.Value);
 
         return null;
