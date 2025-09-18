@@ -39,6 +39,8 @@ public class FileLogger : ILogger
 
     public void Fatal(string text) => Log(text, LogLevel.Fatal);
 
+    public void Help(string text) => Log(text, LogLevel.Help);
+
     public void Info(string text) => Log(text, LogLevel.Info);
 
     public void Warn(string text) => Log(text, LogLevel.Warn);

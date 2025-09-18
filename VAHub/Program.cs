@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using VAHub.Configurations;
+using VAHub.Parsers.Args;
+using VAHub.Logging;
 using VAHub;
 
 
@@ -11,8 +13,16 @@ IConfiguration configuration = new ConfigurationBuilder()
     .Build();
 IServiceProvider serviceProvider = new ServiceCollection()
     .AddServices(configuration)
-    .AddArgs(args)
     .BuildServiceProvider();
+
+ILogger logger = serviceProvider.GetRequiredService<ILogger>();
+ArgsParser parser = serviceProvider.GetRequiredService<ArgsParser>();
+parser.Parse(args);
+logger.SetLevelEnabled(LogLevel.Debug, parser.GetFlag("verbose"));
+if (parser.GetFlag("help")) 
+    logger.Help(parser.GetHelp());
+foreach (var hdl in serviceProvider.GetServices<IArgsHandler>())
+    hdl.Initialize();
 
 App app = serviceProvider.GetRequiredService<App>();
 app.Run();

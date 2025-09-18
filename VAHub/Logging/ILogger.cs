@@ -4,6 +4,8 @@ public interface ILogger
 {
     void SetLevelEnabled(LogLevel level, bool enabled);
 
+    public void Help(string text);
+
     public void Info(string text);
 
     public void Debug(string text);

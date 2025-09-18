@@ -2,12 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using VAHub.Commands.Handlers;
+using VAHub.Parsers.Args;
 using VAHub.Recognition;
 using VAHub.Synthesis;
 using VAHub.Commands;
 using VAHub.Plugins;
 using VAHub.Logging;
-using VAHub.Parsers;
 using VAHub.Input;
 using VAHub.Core;
 
@@ -42,6 +42,9 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<BaseCommandHandler, PythonCommandHandler>(CommandType.Python);
         services.AddKeyedTransient<BaseCommandHandler, JsonCommandHandler>(CommandType.Json);
 
+        // args handlers
+        services.AddTransient<IArgsHandler, PluginArgsHandler>();
+
         // services
         services.AddKeyedTransient<ISpeechSynthesizer, WindowsSpeechSynthesizer>(nameof(WindowsSpeechSynthesizer));
         services.AddKeyedTransient<ISpeechSynthesizer, ConsoleSpeechSynthesizer>(nameof(ConsoleSpeechSynthesizer));
@@ -52,10 +55,19 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IMicrophone, NAudioMicrophone>();
         services.AddTransient<App>();
 
+        services.AddSingleton(CreateArgsParser);
         services.AddSingleton<ILogger, FileLogger>();
-        services.AddSingleton<ArgsParser>();
 
         return services;
+    }
+
+    private static ArgsParser CreateArgsParser(IServiceProvider provider)
+    {
+        ArgsParser parser = new ArgsParser();
+        parser.AddFlag("help", new("-h", "--help", "справка"));
+        parser.AddFlag("verbose", new("-v", "--verbose", "подробный вывод"));
+        parser.AddFlag("commands", new("-c", "--commands", "список команд"));
+        return parser;
     }
 
     private static VACore CreateVACore(IServiceProvider provider)
@@ -67,13 +79,6 @@ public static class ServiceCollectionExtensions
         ISpeechRecognition recognition = provider.GetRequiredKeyedService<ISpeechRecognition>(options.RecognitionKey);
 
         return new(logger, microphone, recognition, synthesizer);
-    }
-
-    public static IServiceCollection AddArgs(this IServiceCollection services, string[] args)
-    {
-        services.AddSingleton<ArgsParser>(sp => new(args));
-
-        return services;
     }
 
     private static CommandManager CreateCommandManager(IServiceProvider provider)
