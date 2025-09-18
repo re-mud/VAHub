@@ -50,11 +50,11 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<ISpeechSynthesizer, ConsoleSpeechSynthesizer>(nameof(ConsoleSpeechSynthesizer));
         services.AddKeyedTransient<ISpeechRecognition, VoskSpeechRecognition>(nameof(VoskSpeechRecognition));
         services.AddTransient(CreateCommandManager);
-        services.AddTransient(CreatePluginManager);
         services.AddTransient(CreateVACore);
         services.AddTransient<IMicrophone, NAudioMicrophone>();
         services.AddTransient<App>();
 
+        services.AddSingleton(CreatePluginManager);
         services.AddSingleton(CreateArgsParser);
         services.AddSingleton<ILogger, FileLogger>();
 
