@@ -1,7 +1,7 @@
 ﻿using VAHub.Commands.Handlers;
 using VAHub.Commands.DTO;
 using VAHub.Search.Trie;
-using VAHub.Enums;
+using VAHub.Commands.Enums;
 
 namespace VAHub.Commands;
 

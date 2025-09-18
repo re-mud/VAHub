@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using VAHub.Commands.DTO;
-using VAHub.Enums;
+using VAHub.Commands.Enums;
 
 namespace VAHub.Commands.Handlers;
 

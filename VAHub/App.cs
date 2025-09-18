@@ -1,8 +1,8 @@
 ﻿using VAHub.Commands.DTO;
 using VAHub.Commands;
 using VAHub.Logging;
-using VAHub.Enums;
 using VAHub.Core;
+using VAHub.Commands.Enums;
 
 namespace VAHub;
 

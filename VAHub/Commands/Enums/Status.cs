@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace VAHub.Enums;
+namespace VAHub.Commands.Enums;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Status

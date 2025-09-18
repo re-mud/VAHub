@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using VAHub.Commands.DTO;
-using VAHub.Enums;
+using VAHub.Commands.Enums;
 
 namespace VAHub.Commands.Handlers;
 

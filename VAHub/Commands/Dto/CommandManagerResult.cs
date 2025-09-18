@@ -1,4 +1,4 @@
-﻿using VAHub.Enums;
+﻿using VAHub.Commands.Enums;
 
 namespace VAHub.Commands.DTO;
 

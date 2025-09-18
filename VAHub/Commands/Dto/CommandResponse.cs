@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using VAHub.Enums;
+using VAHub.Commands.Enums;
 
 namespace VAHub.Commands.DTO;
 

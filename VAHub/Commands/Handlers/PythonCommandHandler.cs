@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Python.Runtime;
 using VAHub.Commands.DTO;
-using VAHub.Enums;
+using VAHub.Commands.Enums;
 
 namespace VAHub.Commands.Handlers;
 
