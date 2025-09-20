@@ -17,6 +17,7 @@ public class App
     private readonly ILogger _logger;
     private DateTime _activationEnd;
     private CommandContext? _context;
+    private string[] _activationPhrases;
 
     public App(VACore core, CommandManager commandManager, ILogger logger, AppOptions options)
     {
@@ -25,8 +26,9 @@ public class App
         _options = options;
         _commandManager = commandManager;
         _mre = new ManualResetEventSlim(false);
-        _isActivationPhraseEnabled = !string.IsNullOrEmpty(_options.ActivationPhrase);
         _activationTimeout = TimeSpan.FromSeconds(_options.ActivationTimeoutSeconds);
+        _isActivationPhraseEnabled = !string.IsNullOrEmpty(_options.ActivationPhrase);
+        _activationPhrases = _isActivationPhraseEnabled ? _options.ActivationPhrase.Split("|") : [];
 
         _core.RecognitionCompleted += Core_RecognitionCompleted;
     }
@@ -36,15 +38,15 @@ public class App
         _core.Start();
         _logger.Debug("Приложение запущено");
 
-        if (string.IsNullOrEmpty(_options.ActivationPhrase))
+        if (_isActivationPhraseEnabled)
         {
-            _logger.Debug($"Фраза активации выключена");
+            _logger.Debug($"Фразы активации '{string.Join("', '", _activationPhrases)}'");
+            _logger.Debug($"Время активации '{_options.ActivationTimeoutSeconds}'");
+            _logger.Debug($"Продление активации '{_options.IsExtendActivationAfterCommand}'");
         }
         else
         {
-            _logger.Debug($"Фраза активации '{_options.ActivationPhrase}'");
-            _logger.Debug($"Время активации '{_options.ActivationTimeoutSeconds}'");
-            _logger.Debug($"Продление активации '{_options.IsExtendActivationAfterCommand}'");
+            _logger.Debug($"Фраза активации выключена");
         }
         _mre.Wait();
     }
@@ -106,14 +108,17 @@ public class App
     {
         command = string.Empty;
 
-        if (text == _options.ActivationPhrase)
+        if (_activationPhrases.Contains(text))
         {
             return true;
         }
-        if (text.StartsWith(_options.ActivationPhrase))
+        foreach (string phrase in _activationPhrases)
         {
-            command = text.Substring(_options.ActivationPhrase.Length).Trim();
-            return true;
+            if (text.StartsWith(phrase, StringComparison.OrdinalIgnoreCase))
+            {
+                command = text.Substring(phrase.Length).Trim();
+                return true;
+            }
         }
         return false;
     }
