@@ -2,5 +2,5 @@
 
 public class PluginManagerOptions
 {
-    public string PluginsPath { set; get; } = "Plugins/";
+    public string PluginsPath { set; get; } = "plugins/";
 }
