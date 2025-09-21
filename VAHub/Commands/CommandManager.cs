@@ -24,7 +24,7 @@ public class CommandManager
                 return new(Status.NotFound, message: $"Команда '{text}' не найдена");
             }
             command = result.Value;
-            remainingText = result.RemainingText;
+            remainingText = result.RemainingText.Trim();
         }
         else
         {

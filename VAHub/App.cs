@@ -28,7 +28,7 @@ public class App
         _mre = new ManualResetEventSlim(false);
         _activationTimeout = TimeSpan.FromSeconds(_options.ActivationTimeoutSeconds);
         _isActivationPhraseEnabled = !string.IsNullOrEmpty(_options.ActivationPhrase);
-        _activationPhrases = _isActivationPhraseEnabled ? _options.ActivationPhrase.Split("|") : [];
+        _activationPhrases = _isActivationPhraseEnabled ? _options.ActivationPhrase.ToLower().Split("|") : [];
 
         _core.RecognitionCompleted += Core_RecognitionCompleted;
     }

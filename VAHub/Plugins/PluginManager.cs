@@ -69,15 +69,15 @@ public class PluginManager
         {
             foreach (var command in plugin.Manifest.Commands)
             {
-                foreach (var text in command.Key.Split('|'))
+                foreach (var text in command.Key.ToLower().Split('|'))
                 {
                     bool state = commands.TryAdd(
-                        text,
+                        text.Trim(),
                         new(command.Value, plugin.Manifest.Type, plugin.Path)
                     );
 
                     if (!state)
-                        _logger.Warn($"Команда '{text}' из '{plugin.Path}' уже была добавлена");
+                        _logger.Warn($"Команда '{text.Trim()}' из '{plugin.Path}' уже была добавлена");
                 }
             }
         }

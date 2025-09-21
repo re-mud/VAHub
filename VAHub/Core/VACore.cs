@@ -81,7 +81,7 @@ public class VACore
     {
         if (_recognition.Accept(e.Buffer, e.Length))
         {
-            string result = _recognition.Result();
+            string result = _recognition.Result().ToLower();
 
             if (result != string.Empty)
                 RecognitionCompleted?.Invoke(result);
