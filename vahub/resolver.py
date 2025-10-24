@@ -1,16 +1,9 @@
+from vahub.models import SearchResult
+from vahub.word_trie import WordTrie
 from typing import TypeVar
-from dataclasses import dataclass
-from word_trie import WordTrie
 
 
 T = TypeVar('T')
-
-
-@dataclass(slots=True, frozen=True)
-class SearchResult[T]:
-	remaining_text: str = ""
-	similarity: float | None = None
-	value: T | None = None
 
 
 class Resolver[T]:
