@@ -22,13 +22,13 @@ def load(path: str | PathLike) -> ModuleType:
 		del sys.modules[name]
 		raise
 	
-def load_all(path: str | PathLike, prefix: str | None = None) -> list[ModuleType]:
+def load_all(path: str | PathLike, prefix: str | None = None) -> dict[str, ModuleType]:
 	p = Path(path)
 
 	if not p.is_dir():
 		raise NotADirectoryError()
 	
-	modules = []
+	modules: dict[str, ModuleType] = {}
 	
 	for child in p.iterdir():
 		if not child.is_file():
@@ -40,7 +40,7 @@ def load_all(path: str | PathLike, prefix: str | None = None) -> list[ModuleType
 		
 		try:
 			module = load(child)
-			modules.append(module)
+			modules[child.stem] = module
 		except:
 			pass
 
