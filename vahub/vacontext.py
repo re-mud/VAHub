@@ -1,6 +1,5 @@
 from typing import Protocol, TypeAlias, runtime_checkable
-from vahub.protocols import OptionsProvider
-from vahub.enums import AppCommand
+from vahub.contracts import OptionsProvider, AppCommand
 import logging
 
 

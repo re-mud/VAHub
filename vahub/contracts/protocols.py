@@ -1,4 +1,4 @@
-from vahub.models import SearchResult
+from .models import SearchResult
 from typing import Protocol, TypeVar
 
 
