@@ -1,5 +1,5 @@
+from vahub.search.word_trie import WordTrie
 from vahub.models import SearchResult
-from vahub.word_trie import WordTrie
 from typing import TypeVar
 
 
