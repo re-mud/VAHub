@@ -14,6 +14,10 @@ class Resolver[T]:
 	def add(self, text: str, value: T) -> None:
 		self._data[text] = value
 		self._trie.add(text, value)
+	
+	def add_all(self, kvps: dict[str, T]) -> None:
+		for k, v in kvps.items():
+			self.add(k, v)
 
 	def search(self, text: str) -> SearchResult[T]:
 		if text in self._data:
