@@ -24,5 +24,9 @@ class VAManifestManager:
 		fields = self.get_fields("commands", dict)
 		commands: dict[str, Callable] = {}
 		for c in fields.values():
-			commands |= c
+			if not isinstance(c, dict):
+				continue
+			for k, v in c.items():
+				if isinstance(k, str) and isinstance(v, Callable):
+					commands[k] = v
 		return commands
