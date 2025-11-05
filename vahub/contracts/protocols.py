@@ -4,7 +4,6 @@ from typing import (
 	TypeVar,
 	runtime_checkable,
 )
-from vahub.vacontext import VAContext
 from .models import SearchResult
 from .enums import AppCommand
 
@@ -20,7 +19,7 @@ class OptionsProvider(Protocol):
 
 @runtime_checkable
 class Handler(Protocol):
-	def __call__(self, ctx: "VAContext", remaining_text: str) -> AppCommand: ...
+	def __call__(self, ctx: "Context", remaining_text: str) -> AppCommand: ...
 
 @runtime_checkable
 class Speaker(Protocol):
@@ -29,6 +28,14 @@ class Speaker(Protocol):
 @runtime_checkable
 class Normalizer(Protocol):
 	def __call__(self, text: str) -> str: ...
+
+class Context(Protocol):
+	def say(self, text: str) -> None: ...
+	def set_context_handler(self, context: Handler) -> None: ...
+	def get_context(self) -> "Payload": ...
+	def clear_context(self) -> "Payload": ...
+	def normalize_numbers(self, text: str) -> str: ...
+	def get_options(self, name: str) -> dict: ...
 
 
 Payload: TypeAlias = Handler | None

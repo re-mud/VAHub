@@ -6,6 +6,7 @@ __all__ = [
 	"Handler",
 	"Speaker",
 	"Normalizer",
+	"Context",
 	"Payload",
 ]
 
@@ -15,6 +16,7 @@ from .protocols import (
 	Handler,
 	Speaker,
 	Normalizer,
+	Context,
 	Payload,
 )
 

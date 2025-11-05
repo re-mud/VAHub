@@ -1,4 +1,5 @@
 from vahub.contracts import (
+	Context,
 	Handler,
 	Searcher,
 	AppCommand,
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class VAHub:
 	def __init__(self, 
-			context: VAContext, 
+			context: Context, 
 			searcher: Searcher):
 		self._context = context
 		self._searcher = searcher
