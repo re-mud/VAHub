@@ -3,11 +3,19 @@ __all__ = [
 	"OptionsProvider",
 	"SearchResult",
 	"AppCommand",
+	"Handler",
+	"Speaker",
+	"Normalizer",
+	"Payload",
 ]
 
 from .protocols import (
-	Searcher, 
+	Searcher,
 	OptionsProvider,
+	Handler,
+	Speaker,
+	Normalizer,
+	Payload,
 )
 
 from .models import (

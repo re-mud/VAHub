@@ -1,5 +1,9 @@
-from vahub.contracts import Searcher, AppCommand, SearchResult
-from vahub.vacontext import VAContext, Handler
+from vahub.contracts import (
+	Handler,
+	Searcher,
+	AppCommand,
+	SearchResult,
+)
 import logging
 
 
