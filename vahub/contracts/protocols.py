@@ -5,7 +5,6 @@ from typing import (
 	TypeVar,
 )
 from .models import SearchResult
-from .enums import AppCommand
 
 
 T = TypeVar('T')
@@ -23,6 +22,6 @@ class Context(Protocol):
 OptionsProvider: TypeAlias = Callable[[str], dict]
 Normalizer: TypeAlias = Callable[[str], str]
 Searcher: TypeAlias = Callable[[str], SearchResult[T]]
-Handler: TypeAlias = Callable[[Context, str], AppCommand]
+Handler: TypeAlias = Callable[[Context, str], None]
 Speaker: TypeAlias = Callable[[str], None]
 Payload: TypeAlias = "Handler | None"

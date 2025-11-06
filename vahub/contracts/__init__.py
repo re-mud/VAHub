@@ -2,7 +2,6 @@ __all__ = [
 	"Searcher",
 	"OptionsProvider",
 	"SearchResult",
-	"AppCommand",
 	"Handler",
 	"Speaker",
 	"Normalizer",
@@ -22,8 +21,4 @@ from .protocols import (
 
 from .models import (
 	SearchResult
-)
-
-from .enums import (
-	AppCommand
 )

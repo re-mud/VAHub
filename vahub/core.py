@@ -2,7 +2,6 @@ from vahub.contracts import (
 	Context,
 	Handler,
 	Searcher,
-	AppCommand,
 	SearchResult,
 )
 import logging
@@ -18,28 +17,25 @@ class VAHub:
 		self._context = context
 		self._searcher = searcher
 
-	def handle(self, text: str) -> AppCommand:
+	def handle(self, text: str) -> None:
 		payload = self._context.clear_context()
 
 		if payload is None:
 			result: SearchResult[Handler] = self._searcher(text)
 			handler: Handler | None = result.value
 			if handler != None:
-				return self._execute(handler, result.remaining_text)
-			return AppCommand.NONE
+				self._execute(handler, result.remaining_text)
 		
-		if isinstance(payload, Handler):
-			return self._execute(payload, text)
+		elif isinstance(payload, Handler):
+			self._execute(payload, text)
 
-		logger.error("unknown context type")
-		return AppCommand.NONE
+		else:
+			logger.error("unknown context type")
 	
-	def _execute(self, handler: Handler, text: str) -> AppCommand:
+	def _execute(self, handler: Handler, text: str) -> None:
 		try:
-			command = handler(self._context, text)
-			return AppCommand.from_value(command)
+			handler(self._context, text)
 		except:
 			name = getattr(handler, "__name__", "unknown")
 			module = getattr(handler, "__module__", "unknown")
 			logger.exception(f"{name} from {module} failed")
-			return AppCommand.NONE
