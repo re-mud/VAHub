@@ -1,3 +1,4 @@
 {
+	"speaker": "pyttsx3",
 	"model": "path/to/model"
 }
