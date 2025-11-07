@@ -3,15 +3,16 @@ from vahub.contracts import Normalizer, Speaker
 from copy import deepcopy
 
 
-T = TypeVar("T")
+TValue = TypeVar("TValue")
+TKey = TypeVar("TKey")
 
 
 class VAManifestManager:
 	def __init__(self, manifests: dict[str, dict]):
 		self._manifests = manifests
 
-	def get_fields(self, field: Any, type_field: Type[T] = object) -> dict[str, T]:
-		fields: dict[str, T] = {}
+	def get_fields(self, field: Any, type_field: Type[TKey] = object) -> dict[str, TKey]:
+		fields: dict[str, TKey] = {}
 		for key in self._manifests:
 			value = self._manifests[key].get(field, None)
 			if value is not None and isinstance(value, type_field):
@@ -20,8 +21,8 @@ class VAManifestManager:
 	
 	def get_fields_dict(self, 
 			field: Any, 
-			type_key: Type[T] = object, 
-			type_value: Type[T] = object) -> dict[str, Callable]:
+			type_key: Type[TKey] = object, 
+			type_value: Type[TValue] = object) -> dict[TKey, TValue]:
 		fields = self.get_fields(field, dict)
 		filtered_fields = {}
 		for i in fields.values():
