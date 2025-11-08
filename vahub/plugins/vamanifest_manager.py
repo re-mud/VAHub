@@ -41,9 +41,22 @@ class VAManifestManager:
 		return self.get_fields("default_options", dict)
 	
 	def get_commands(self) -> dict[str, Callable]:
-		commands: dict[str, Callable] = self.get_fields_dict("commands", str, Callable)
-		split_commands: dict[str, Callable] = {}
-		for k, v in commands.items():
-			for i in k.split("|"):
-				split_commands[i] = v
-		return split_commands
+		tree: dict[str, dict] = self.get_fields_dict("commands", str)
+		if len(tree) == 0:
+			return {}
+		
+		stack: list[tuple[str, dict]] = [("", tree)]
+		commands: dict[str, Callable] = {}
+		while stack:
+			prefix, cur = stack.pop()
+			for k, v in cur.items():
+				if not isinstance(k, str):
+					continue
+
+				for i in k.split("|"):
+					key = prefix + " " + i.strip()
+					if isinstance(v, dict):
+						stack.append((key, v))
+					elif callable(v):
+						commands[key] = v
+		return commands
