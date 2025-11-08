@@ -15,7 +15,11 @@ model_path = bootstrap.config["model"]
 samplerate = bootstrap.config["samplerate"]
 
 queue = Queue()
-model = Model(model_path)
+try:
+	model = Model(model_path)
+except:
+	logger.critical("failed to create a model: check path 'model' in config.json")
+	exit(1)
 recognizer = KaldiRecognizer(model, samplerate)
 
 
