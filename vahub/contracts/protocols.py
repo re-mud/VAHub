@@ -1,8 +1,9 @@
 from typing import (
+	TypeAlias,
 	Callable,
 	Protocol,
-	TypeAlias,
 	TypeVar,
+	Any,
 )
 from .models import SearchResult
 
@@ -20,7 +21,7 @@ class Context(Protocol):
 
 
 OptionsProvider: TypeAlias = Callable[[str], dict]
-Normalizer: TypeAlias = Callable[[str], str]
+Normalizer: TypeAlias = Callable[[str], Any | None]
 Searcher: TypeAlias = Callable[[str], SearchResult[T]]
 Handler: TypeAlias = Callable[[Context, str], None]
 Speaker: TypeAlias = Callable[[str], None]

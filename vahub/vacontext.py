@@ -39,12 +39,11 @@ class VAContext:
 		self._context = None
 		return context
 
-	def normalize_numbers(self, text: str) -> str:
+	def normalize_numbers(self, text: str) -> int | None:
 		try:
 			return self._normalize_numbers(text)
 		except:
 			logger.exception("normalize failed")
-			return text
 
 	def get_options(self, name: str) -> dict:
 		return self._options_provider(name)
