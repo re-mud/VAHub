@@ -18,17 +18,14 @@ class VAHub:
 		self._searcher = searcher
 
 	def handle(self, text: str) -> None:
-		payload = self._context.clear_context()
-
+		payload = self._context.pop_context()
 		if payload is None:
 			result: SearchResult[Handler] = self._searcher(text)
 			handler: Handler | None = result.value
 			if handler != None:
 				self._execute(handler, result.remaining_text)
-		
 		elif isinstance(payload, Handler):
 			self._execute(payload, text)
-
 		else:
 			logger.error("unknown context type")
 	

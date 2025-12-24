@@ -5,8 +5,8 @@ from vahub.contracts import (
 	Payload,
 	Speaker,
 )
+from datetime import datetime, timedelta
 import logging
-
 
 
 logger = logging.getLogger(__name__)
@@ -28,16 +28,8 @@ class VAContext:
 		except:
 			logger.exception("speak failed")
 
-	def set_context_handler(self, context: Handler) -> None:
-		self._context = context
-
-	def get_context(self) -> Payload:
-		return self._context
-	
-	def clear_context(self) -> Payload:
-		context = self._context
-		self._context = None
-		return context
+	def get_options(self, name: str) -> dict:
+		return self._options_provider(name)
 
 	def normalize_numbers(self, text: str) -> int | None:
 		try:
@@ -45,5 +37,10 @@ class VAContext:
 		except:
 			logger.exception("normalize failed")
 
-	def get_options(self, name: str) -> dict:
-		return self._options_provider(name)
+	def set_context_handler(self, context: Handler) -> None:
+		self._context = context
+	
+	def pop_context(self) -> Payload:
+		context = self._context
+		self._context = None
+		return context
