@@ -28,6 +28,10 @@ class VAHub:
 			self._execute(payload, text)
 		else:
 			logger.error("unknown context type")
+		
+		timer = self._context.pop_timer()
+		if timer is not None:
+			self._execute(timer, "")
 	
 	def _execute(self, handler: Handler, text: str) -> None:
 		try:
