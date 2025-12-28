@@ -1,5 +1,6 @@
 from vahub.options import OptionsRegistry, OptionsFileProvider
 from vahub.plugins import VAManifestManager, PluginManager
+from vahub.task import CancellationToken
 from vahub.vacontext import VAContext
 from vahub.search import Resolver
 from vahub.core import VAHub
@@ -29,15 +30,18 @@ def load_config() -> None:
 	config.update(loaded_config)
 
 def setup_logging(level=logging.WARNING, logfile=None) -> None:
-    log_format = "[%(asctime)s] [%(name)s/%(levelname)s]: %(message)s"
+	log_format = "[%(asctime)s] [%(name)s/%(levelname)s]: %(message)s"
 
-    handlers = [logging.StreamHandler()]
-    if logfile:
-        handlers.append(logging.FileHandler(logfile, encoding="utf-8"))
+	handlers = [logging.StreamHandler()]
+	if logfile:
+		handlers.append(logging.FileHandler(logfile, encoding="utf-8"))
 
-    logging.basicConfig(level=level, format=log_format, datefmt="%H:%M:%S", handlers=handlers)
+	logging.basicConfig(level=level, format=log_format, datefmt="%H:%M:%S", handlers=handlers)
 
-def create_vahub() -> VAHub:
+def create_cancellation_token() -> CancellationToken:
+	return CancellationToken()
+
+def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	plugin_manager = PluginManager("plugins/")
 	plugin_manager.load()
 	manifests = plugin_manager.emit_all("get_manifest")
@@ -61,7 +65,7 @@ def create_vahub() -> VAHub:
 		logger.warning(f"normalizer numbers '{config["numbers_normalizer"]}' not found")
 		normalize_numbers = lambda t: t
 	
-	context = VAContext(speaker, normalize_numbers, options_registry.get)
+	context = VAContext(speaker, normalize_numbers, options_registry.get, cancellation_token)
 	searcher = Resolver()
 	searcher.add_all(commands)
 
