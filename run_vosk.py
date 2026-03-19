@@ -33,12 +33,14 @@ try:
 			blocksize=samplerate // 2, 
 			dtype='int16',
 			channels=1, 
-			callback=callback):
+			callback=callback) as stream:
 		while True:
 			data = queue.get()
 			if recognizer.AcceptWaveform(data):
+				stream.stop()
 				text = json.loads(recognizer.Result())["text"]
 				vahub.handle(text)
+				stream.start()
 			if cancellation_token.is_cancelled:
 				break
 except KeyboardInterrupt:
