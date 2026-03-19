@@ -8,6 +8,7 @@ from vahub.contracts import (
 )
 import threading
 import logging
+import queue
 
 
 logger = logging.getLogger(__name__)
@@ -25,12 +26,17 @@ class VAContext:
 		self._cancellation_token = cancellation_token
 		self._context: Payload = None
 		self._context_lock = threading.Lock()
+		self._queue = queue.Queue()
 
 	def say(self, text: str) -> None:
-		try:
-			self._speaker(text)
-		except:
-			logger.exception("speak failed")
+		self._queue.put(text)
+
+	def update_queue(self) -> None:
+		while not self._queue.empty():
+			try:
+				self._speaker(self._queue.get())
+			except:
+				logger.exception("speak failed")
 
 	def get_options(self, name: str) -> dict:
 		return self._options_provider(name)

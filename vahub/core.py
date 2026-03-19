@@ -28,6 +28,7 @@ class VAHub:
 			self._execute(payload, text)
 		else:
 			logger.error("unknown context type")
+		self._context.update_queue()
 	
 	def _execute(self, handler: Handler, text: str) -> None:
 		try:
