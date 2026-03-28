@@ -2,7 +2,7 @@ from vahub.options import OptionsRegistry, OptionsFileProvider
 from vahub.plugins import VAManifestManager, PluginManager
 from vahub.task import CancellationToken
 from vahub.vacontext import VAContext
-from vahub.search import Resolver
+from vahub.search import Solver
 from vahub.core import VAHub
 from pathlib import Path
 from typing import Any
@@ -14,7 +14,8 @@ config: dict[str, Any] = {
 	"speaker": None,
 	"numbers_normalizer": None,
 	"model": None,
-	"samplerate": 16000
+	"samplerate": 16000,
+	"fuzzy_solver": None,
 }
 
 logger = logging.getLogger(__name__)
@@ -52,21 +53,26 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	options_registry = OptionsRegistry(options_provider.get, default_options)
 
 	numbers_normalizers = manifest_manager.get_numbers_normalizers()
+	fuzzy_solvers = manifest_manager.get_fuzzy_solvers()
 	commands = manifest_manager.get_commands()
 	speakers = manifest_manager.get_speakers()
 
 	speaker = speakers.get(config["speaker"], None)
-	if speaker is None:
+	if speaker is None and config["speaker"] != None:
 		logger.warning(f"speaker '{config["speaker"]}' not found")
 		speaker = lambda t: print(f"[speaker]: {t}")
 
-	normalize_numbers = numbers_normalizers.get(config["numbers_normalizer"], None)
-	if normalize_numbers is None:
+	numbers_normalizer = numbers_normalizers.get(config["numbers_normalizer"], None)
+	if numbers_normalizer is None and config["numbers_normalizer"] != None:
 		logger.warning(f"normalizer numbers '{config["numbers_normalizer"]}' not found")
-		normalize_numbers = lambda t: t
+		numbers_normalizer = lambda t: t
+
+	fuzzy_solver = fuzzy_solvers.get(config["fuzzy_solver"], None)
+	if fuzzy_solver is None and config["fuzzy_solver"] != None:
+		logger.warning(f"normalizer numbers '{config["fuzzy_solver"]}' not found")
 	
-	context = VAContext(speaker, normalize_numbers, options_registry.get, cancellation_token)
-	searcher = Resolver()
+	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
+	searcher = Solver(fuzzy_solver)
 	searcher.add_all(commands)
 
 	return VAHub(context, searcher.search)

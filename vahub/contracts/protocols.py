@@ -24,6 +24,7 @@ class Context(Protocol):
 
 
 OptionsProvider: TypeAlias = Callable[[str], dict]
+FuzzySolver: TypeAlias = Callable[[str, dict[str, Callable]], SearchResult]
 Normalizer: TypeAlias = Callable[[str], Any | None]
 Searcher: TypeAlias = Callable[[str], SearchResult[T]]
 Handler: TypeAlias = Callable[[Context, str], None]

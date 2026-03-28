@@ -1,5 +1,5 @@
 from typing import Any, Callable, Type, TypeVar
-from vahub.contracts import Normalizer, Speaker
+from vahub.contracts import Normalizer, Speaker, FuzzySolver
 from copy import deepcopy
 
 
@@ -30,6 +30,9 @@ class VAManifestManager:
 				if isinstance(k, type_key) and isinstance(v, type_value):
 					filtered_fields[k] = v
 		return filtered_fields
+	
+	def get_fuzzy_solvers(self) -> dict[str, FuzzySolver]:
+		return self.get_fields_dict("fuzzy_solvers", str, Callable)
 	
 	def get_numbers_normalizers(self) -> dict[str, Normalizer]:
 		return self.get_fields_dict("numbers_normalizers", str, Callable)

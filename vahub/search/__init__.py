@@ -1,7 +1,7 @@
 __all__ = [
 	"WordTrie",
-	"Resolver",
+	"Solver",
 ]
 
 from .word_trie import WordTrie
-from .resolver import Resolver
+from .solver import Solver
