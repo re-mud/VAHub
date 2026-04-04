@@ -1,4 +1,5 @@
 from typing import (
+	runtime_checkable,
 	TypeAlias,
 	Callable,
 	Protocol,
@@ -11,6 +12,7 @@ from .models import SearchResult
 T = TypeVar('T')
 
 
+@runtime_checkable
 class Context(Protocol):
 	def say(self, text: str) -> None: ...
 	def update_queue(self) -> None: ...
@@ -22,11 +24,28 @@ class Context(Protocol):
 	def is_cancelled(self) -> bool: ...
 	def cancel(self) -> None: ...
 
+@runtime_checkable
+class OptionsProvider(Protocol):
+	def __call__(self, name: str) -> dict: ...
 
-OptionsProvider: TypeAlias = Callable[[str], dict]
-FuzzySolver: TypeAlias = Callable[[str, dict[str, Callable]], SearchResult]
-Normalizer: TypeAlias = Callable[[str], Any | None]
-Searcher: TypeAlias = Callable[[str], SearchResult[T]]
-Handler: TypeAlias = Callable[[Context, str], None]
-Speaker: TypeAlias = Callable[[str], None]
-Payload: TypeAlias = "Handler | None"
+@runtime_checkable
+class FuzzySolver(Protocol):
+	def __call__(self, text: str, data: dict[str, T]) -> SearchResult: ...
+
+@runtime_checkable
+class Normalizer(Protocol):
+	def __call__(self, text: str) -> Any | None: ...
+
+@runtime_checkable
+class Searcher(Protocol):
+	def __call__(self, text: str) -> SearchResult[T]: ...
+
+@runtime_checkable
+class Handler(Protocol):
+	def __call__(self, context: Context, text: str) -> None: ...
+
+@runtime_checkable
+class Speaker(Protocol):
+	def __call__(self, text: str) -> None: ...
+
+Payload: TypeAlias = Handler | None
