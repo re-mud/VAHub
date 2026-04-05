@@ -46,11 +46,21 @@ def setup_logging(level=logging.WARNING, logfile=None) -> None:
 def create_cancellation_token() -> CancellationToken:
 	return CancellationToken()
 
-def create_vahub(cancellation_token: CancellationToken) -> VAHub:
+def create_manifest_manager() -> VAManifestManager:
 	plugin_manager = PluginManager("plugins/")
 	plugin_manager.load()
 	manifests = plugin_manager.emit_all("get_manifest")
-	manifest_manager = VAManifestManager(manifests)
+	return VAManifestManager(manifests)
+
+def _get_func_from_config(name: str, array: dict[str, Any], default: Callable | None = None):
+	func = array.get(config[name], None)
+	if func is None and config[name] != None:
+		logger.warning(f"{name} '{config[name]}' not found")
+		func = default
+	return func
+
+def create_vahub(cancellation_token: CancellationToken) -> VAHub:
+	manifest_manager = create_manifest_manager()
 
 	options_provider = OptionsFileProvider("options/")
 	default_options = manifest_manager.get_default_options()
@@ -61,20 +71,10 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	commands = manifest_manager.get_commands()
 	speakers = manifest_manager.get_speakers()
 
-	speaker = speakers.get(config["speaker"], None)
-	if speaker is None and config["speaker"] != None:
-		logger.warning(f"speaker '{config["speaker"]}' not found")
-		speaker = lambda t: print(f"[speaker]: {t}")
+	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
+	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
+	fuzzy_solver = _get_func_from_config("fuzzy_solver", fuzzy_solvers)
 
-	numbers_normalizer = numbers_normalizers.get(config["numbers_normalizer"], None)
-	if numbers_normalizer is None and config["numbers_normalizer"] != None:
-		logger.warning(f"normalizer numbers '{config["numbers_normalizer"]}' not found")
-		numbers_normalizer = lambda t: t
-
-	fuzzy_solver = fuzzy_solvers.get(config["fuzzy_solver"], None)
-	if fuzzy_solver is None and config["fuzzy_solver"] != None:
-		logger.warning(f"normalizer numbers '{config["fuzzy_solver"]}' not found")
-	
 	preprocessor = ActivationPhrase(config["activation_phrase"], config["phrase_activity_time"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver(fuzzy_solver)
