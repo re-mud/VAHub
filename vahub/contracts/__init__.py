@@ -7,7 +7,8 @@ __all__ = [
 	"Normalizer",
 	"Context",
 	"Payload",
-	"FuzzySolver"
+	"FuzzySolver",
+	"Preprocessor",
 ]
 
 from .protocols import (
@@ -19,6 +20,7 @@ from .protocols import (
 	Context,
 	Payload,
 	FuzzySolver,
+	Preprocessor,
 )
 
 from .models import (

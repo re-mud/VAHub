@@ -48,4 +48,8 @@ class Handler(Protocol):
 class Speaker(Protocol):
 	def __call__(self, text: str) -> None: ...
 
+@runtime_checkable
+class Preprocessor(Protocol):
+	def __call__(self, text: str) -> str: ...
+
 Payload: TypeAlias = Handler | None

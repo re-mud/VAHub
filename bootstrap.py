@@ -1,11 +1,12 @@
 from vahub.options import OptionsRegistry, OptionsFileProvider
 from vahub.plugins import VAManifestManager, PluginManager
+from vahub.processors import ActivationPhrase
 from vahub.task import CancellationToken
 from vahub.vacontext import VAContext
+from typing import Any, Callable
 from vahub.search import Solver
 from vahub.core import VAHub
 from pathlib import Path
-from typing import Any
 from json import loads
 import logging
 
@@ -16,6 +17,9 @@ config: dict[str, Any] = {
 	"model": None,
 	"samplerate": 16000,
 	"fuzzy_solver": None,
+	"activation_phrase": "",
+	"phrase_activity_time": 15,
+	"min_similarity_percent": 0.6, 
 }
 
 logger = logging.getLogger(__name__)
@@ -26,7 +30,7 @@ def load_config() -> None:
 	if not path.exists():
 		return
 	
-	with open("config.json") as f:
+	with open("config.json", encoding="utf-8") as f:
 		loaded_config = loads(f.read())
 	config.update(loaded_config)
 
@@ -71,8 +75,9 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	if fuzzy_solver is None and config["fuzzy_solver"] != None:
 		logger.warning(f"normalizer numbers '{config["fuzzy_solver"]}' not found")
 	
+	preprocessor = ActivationPhrase(config["activation_phrase"], config["phrase_activity_time"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver(fuzzy_solver)
 	searcher.add_all(commands)
 
-	return VAHub(context, searcher.search)
+	return VAHub(context, searcher.search, preprocessor.preprocessing, config["min_similarity_percent"])
