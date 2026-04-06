@@ -75,7 +75,7 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
 	fuzzy_solver = _get_func_from_config("fuzzy_solver", fuzzy_solvers)
 
-	preprocessor = ActivationPhrase(config["activation_phrase"], config["phrase_activity_time"])
+	preprocessor = ActivationPhrase(config["activation_phrase"].split("|"), config["phrase_activity_time"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver(fuzzy_solver)
 	searcher.add_all(commands)
