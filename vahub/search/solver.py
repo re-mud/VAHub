@@ -1,5 +1,5 @@
-from vahub.contracts.protocols import FuzzySolver
 from vahub.contracts import SearchResult
+from vahub.search import levenshtein
 from .word_trie import WordTrie
 from typing import TypeVar
 
@@ -8,10 +8,9 @@ T = TypeVar('T')
 
 
 class Solver[T]:
-	def __init__(self, fuzzy_solver: FuzzySolver | None = None):
+	def __init__(self):
 		self._data: dict[str, T] = {}
 		self._trie = WordTrie[T]()
-		self._fuzzy = fuzzy_solver
 
 	def add(self, text: str, value: T) -> None:
 		self._data[text] = value
@@ -23,14 +22,17 @@ class Solver[T]:
 
 	def search(self, text: str) -> SearchResult[T]:
 		if text in self._data:
-			return SearchResult(similarity=1.0, value=self._data[text])
+			return SearchResult("", 1.0, self._data[text])
 		
 		trie_result = self._trie.start_with(text)
 		if trie_result:
 			value, remaining_text = trie_result
 			return SearchResult(remaining_text, 1.0, value)
 		
-		if self._fuzzy != None:
-			return self._fuzzy(text, self._data)
+		best = ("", 0) # key, similarity
+		for k in self._data.keys():
+			s = levenshtein.similarity(k, text)
+			if best[1] < s:
+				best = (k, s)
 		
-		return SearchResult()
+		return SearchResult("", best[1], self._data.get(best[0]))

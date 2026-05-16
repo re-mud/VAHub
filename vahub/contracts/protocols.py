@@ -1,7 +1,6 @@
 from typing import (
 	runtime_checkable,
 	TypeAlias,
-	Callable,
 	Protocol,
 	TypeVar,
 	Any,
@@ -27,10 +26,6 @@ class Context(Protocol):
 @runtime_checkable
 class OptionsProvider(Protocol):
 	def __call__(self, name: str) -> dict: ...
-
-@runtime_checkable
-class FuzzySolver(Protocol):
-	def __call__(self, text: str, data: dict[str, T]) -> SearchResult: ...
 
 @runtime_checkable
 class Normalizer(Protocol):

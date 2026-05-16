@@ -16,7 +16,6 @@ config: dict[str, Any] = {
 	"numbers_normalizer": None,
 	"model": None,
 	"samplerate": 16000,
-	"fuzzy_solver": None,
 	"activation_phrase": "",
 	"phrase_activity_time": 15,
 	"min_similarity_percent": 0.6, 
@@ -67,17 +66,15 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	options_registry = OptionsRegistry(options_provider.get, default_options)
 
 	numbers_normalizers = manifest_manager.get_numbers_normalizers()
-	fuzzy_solvers = manifest_manager.get_fuzzy_solvers()
 	commands = manifest_manager.get_commands()
 	speakers = manifest_manager.get_speakers()
 
 	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
 	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
-	fuzzy_solver = _get_func_from_config("fuzzy_solver", fuzzy_solvers)
 
 	preprocessor = ActivationPhrase(config["activation_phrase"].split("|"), config["phrase_activity_time"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
-	searcher = Solver(fuzzy_solver)
+	searcher = Solver()
 	searcher.add_all(commands)
 
 	return VAHub(context, searcher.search, preprocessor.preprocessing, config["min_similarity_percent"])
