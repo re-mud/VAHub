@@ -7,14 +7,16 @@ import json
 
 
 bootstrap.setup_logging()
-bootstrap.load_config()
 logger = logging.getLogger(__name__)
+logger.info("initializing...")
+bootstrap.load_config()
 cancellation_token = bootstrap.create_cancellation_token()
 vahub = bootstrap.create_vahub(cancellation_token)
 
 model_path = bootstrap.config["model"]
 samplerate = bootstrap.config["samplerate"]
 
+logger.info(f"loading model from '{model_path}'...")
 queue = Queue()
 try:
 	model = Model(model_path)
@@ -28,12 +30,14 @@ def callback(indata, frames, time, status):
 	queue.put(bytes(indata))
 
 try:
+	logger.info(f"starting input stream...")
 	with sd.RawInputStream(
 			samplerate=samplerate, 
 			blocksize=samplerate // 2, 
 			dtype='int16',
 			channels=1, 
 			callback=callback) as stream:
+		logger.info(f"application started")
 		while True:
 			data = queue.get()
 			if recognizer.AcceptWaveform(data):
