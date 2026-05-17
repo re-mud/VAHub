@@ -1,17 +1,32 @@
+from vahub.search import levenshtein
 import time
 
+
 class ActivationPhrase:
-	def __init__(self, phrases: list, activity_sec: int = 15):
-		self._phrases = sorted(phrases)
-		self._activity_sec = activity_sec
-		self._activity_expired = 0
+	def __init__(self, words: list, duration: int = 15, similarity_threshold: float = 0.4):
+		self._similarity_threshold = similarity_threshold
+		self._words = sorted(words)
+		self._duration = duration
+		self._expired = 0
 
 	def preprocessing(self, text: str) -> str:
-		for phrase in self._phrases:
+		if text == "":
+			return
+		
+		for phrase in self._words:
 			if phrase in text:
+				print(phrase)
 				startid = text.index(phrase) + len(phrase)
-				self._activity_expired = time.time() + self._activity_sec
+				self._expired = time.time() + self._duration
 				return text[startid:].strip()
-		if self._activity_expired > time.time():
+		
+		word = text.split()[0]
+		for phrase in self._words:
+			if levenshtein.similarity(phrase, word) > self._similarity_threshold:
+				self._expired = time.time() + self._duration
+				return text[len(word):].strip()
+
+		if self._expired > time.time():
 			return text
+		
 		return ""

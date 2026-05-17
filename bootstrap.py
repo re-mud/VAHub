@@ -19,6 +19,7 @@ config: dict[str, Any] = {
 	"activation_phrase": "",
 	"phrase_activity_time": 15,
 	"min_similarity_percent": 0.6, 
+	"wake_words_similarity_threshold": 0.4
 }
 
 logger = logging.getLogger(__name__)
@@ -72,7 +73,7 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
 	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
 
-	preprocessor = ActivationPhrase(config["activation_phrase"].split("|"), config["phrase_activity_time"])
+	preprocessor = ActivationPhrase(config["activation_phrase"].split("|"), config["phrase_activity_time"], config["wake_words_similarity_threshold"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver()
 	searcher.add_all(commands)
