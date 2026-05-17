@@ -16,9 +16,9 @@ config: dict[str, Any] = {
 	"numbers_normalizer": None,
 	"model": None,
 	"samplerate": 16000,
-	"activation_phrase": "",
-	"phrase_activity_time": 15,
-	"min_similarity_percent": 0.6, 
+	"wake_words": "",
+	"context_duration": 15,
+	"similarity_threshold": 0.6, 
 	"wake_words_similarity_threshold": 0.4
 }
 
@@ -73,9 +73,9 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
 	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
 
-	preprocessor = ActivationPhrase(config["activation_phrase"].split("|"), config["phrase_activity_time"], config["wake_words_similarity_threshold"])
+	preprocessor = ActivationPhrase(config["wake_words"].split("|"), config["context_duration"], config["wake_words_similarity_threshold"])
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver()
 	searcher.add_all(commands)
 
-	return VAHub(context, searcher.search, preprocessor.preprocessing, config["min_similarity_percent"])
+	return VAHub(context, searcher.search, preprocessor.preprocessing, config["similarity_threshold"])
