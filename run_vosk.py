@@ -6,10 +6,10 @@ import logging
 import json
 
 
+bootstrap.load_config()
 bootstrap.setup_logging()
 logger = logging.getLogger(__name__)
 logger.info("initializing...")
-bootstrap.load_config()
 cancellation_token = bootstrap.create_cancellation_token()
 vahub = bootstrap.create_vahub(cancellation_token)
 

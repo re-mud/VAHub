@@ -19,7 +19,9 @@ config: dict[str, Any] = {
 	"wake_words": "",
 	"context_duration": 15,
 	"similarity_threshold": 0.6, 
-	"wake_words_similarity_threshold": 0.4
+	"wake_words_similarity_threshold": 0.4,
+	"log_file": None,
+	"log_level": "INFO",
 }
 
 logger = logging.getLogger(__name__)
@@ -34,14 +36,22 @@ def load_config() -> None:
 		loaded_config = loads(f.read())
 	config.update(loaded_config)
 
-def setup_logging(level=logging.WARNING, logfile=None) -> None:
+def setup_logging() -> None:
+	log_file = config["log_file"]
+	log_level = config["log_level"]
 	log_format = "[%(asctime)s] [%(name)s/%(levelname)s]: %(message)s"
+	date_format = "%H:%M:%S"
 
 	handlers = [logging.StreamHandler()]
-	if logfile:
-		handlers.append(logging.FileHandler(logfile, encoding="utf-8"))
+	if log_file:
+		handlers.append(logging.FileHandler(log_file, encoding="utf-8"))
 
-	logging.basicConfig(level=level, format=log_format, datefmt="%H:%M:%S", handlers=handlers)
+	logging.basicConfig(
+		level=log_level, 
+		format=log_format, 
+		datefmt=date_format, 
+		handlers=handlers
+	)
 
 def create_cancellation_token() -> CancellationToken:
 	return CancellationToken()
@@ -73,7 +83,11 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
 	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
 
-	preprocessor = ActivationPhrase(config["wake_words"].split("|"), config["context_duration"], config["wake_words_similarity_threshold"])
+	wake_words = config["wake_words"].split("|")
+	context_duration = config["context_duration"]
+	words_sim_threshold = config["wake_words_similarity_threshold"]
+	preprocessor = ActivationPhrase(wake_words, context_duration, words_sim_threshold)
+
 	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
 	searcher = Solver()
 	searcher.add_all(commands)

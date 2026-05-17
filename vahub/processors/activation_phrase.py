@@ -15,7 +15,6 @@ class ActivationPhrase:
 		
 		for phrase in self._words:
 			if phrase in text:
-				print(phrase)
 				startid = text.index(phrase) + len(phrase)
 				self._expired = time.time() + self._duration
 				return text[startid:].strip()
