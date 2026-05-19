@@ -1,5 +1,4 @@
 {
 	"speaker": "pyttsx3",
-	"model": "path/to/model",
-	"numbers_normalizer": "simple"
+	"model": "path/to/model"
 }

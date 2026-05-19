@@ -1,6 +1,6 @@
+from vahub.processors import ActivationPhrase, number_normalizer
 from vahub.options import OptionsRegistry, OptionsFileProvider
 from vahub.plugins import VAManifestManager, PluginManager
-from vahub.processors import ActivationPhrase
 from vahub.task import CancellationToken
 from vahub.vacontext import VAContext
 from typing import Any, Callable
@@ -13,7 +13,6 @@ import logging
 
 config: dict[str, Any] = {
 	"speaker": None,
-	"numbers_normalizer": None,
 	"model": None,
 	"samplerate": 16000,
 	"wake_words": "",
@@ -22,6 +21,7 @@ config: dict[str, Any] = {
 	"wake_words_similarity_threshold": 0.4,
 	"log_file": None,
 	"log_level": "INFO",
+	"normalize_numbers": True,
 }
 
 logger = logging.getLogger(__name__)
@@ -76,20 +76,19 @@ def create_vahub(cancellation_token: CancellationToken) -> VAHub:
 	default_options = manifest_manager.get_default_options()
 	options_registry = OptionsRegistry(options_provider.get, default_options)
 
-	numbers_normalizers = manifest_manager.get_numbers_normalizers()
 	commands = manifest_manager.get_commands()
 	speakers = manifest_manager.get_speakers()
 
 	speaker = _get_func_from_config("speaker", speakers, lambda t: print(f"[speaker]: {t}"))
-	numbers_normalizer = _get_func_from_config("numbers_normalizer", numbers_normalizers, lambda t: t)
 
 	wake_words = config["wake_words"].split("|")
 	context_duration = config["context_duration"]
 	words_sim_threshold = config["wake_words_similarity_threshold"]
 	preprocessor = ActivationPhrase(wake_words, context_duration, words_sim_threshold)
 
-	context = VAContext(speaker, numbers_normalizer, options_registry.get, cancellation_token)
+	normalizer = number_normalizer.text_to_number if config["normalize_numbers"] else None
+	context = VAContext(speaker, options_registry.get, cancellation_token)
 	searcher = Solver()
 	searcher.add_all(commands)
 
-	return VAHub(context, searcher.search, preprocessor.preprocessing, config["similarity_threshold"])
+	return VAHub(context, searcher.search, preprocessor.preprocessing, normalizer, config["similarity_threshold"])

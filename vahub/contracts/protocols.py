@@ -3,7 +3,6 @@ from typing import (
 	TypeAlias,
 	Protocol,
 	TypeVar,
-	Any,
 )
 from .models import SearchResult
 
@@ -16,7 +15,6 @@ class Context(Protocol):
 	def say(self, text: str) -> None: ...
 	def update_queue(self) -> None: ...
 	def get_options(self, name: str) -> dict: ...
-	def normalize_numbers(self, text: str) -> int | None: ...
 	def set_context_handler(self, context: "Handler") -> None: ...
 	def pop_context(self) -> "Payload": ...
 	@property
@@ -26,10 +24,6 @@ class Context(Protocol):
 @runtime_checkable
 class OptionsProvider(Protocol):
 	def __call__(self, name: str) -> dict: ...
-
-@runtime_checkable
-class Normalizer(Protocol):
-	def __call__(self, text: str) -> Any | None: ...
 
 @runtime_checkable
 class Searcher(Protocol):

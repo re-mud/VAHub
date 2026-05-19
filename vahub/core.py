@@ -15,17 +15,22 @@ class VAHub:
 	def __init__(self, 
 			context: Context, 
 			searcher: Searcher,
-			preprocessor: Preprocessor,
+			wakeup_processor: Preprocessor,
+			normalizer: Preprocessor | None = None,
 			min_similarity: float = 0.6):
 		self._context = context
 		self._searcher = searcher
-		self._preprocessor = preprocessor
+		self._wakeup_processor = wakeup_processor
+		self._normalizer = normalizer
 		self._min_similarity = min_similarity
 
 	def handle(self, text: str) -> None:
+		if self._normalizer:
+			text = self._normalizer(text)
+
 		payload = self._context.pop_context()
 		if payload is None:
-			text = self._preprocessor(text)
+			text = self._wakeup_processor(text)
 			if text:
 				result: SearchResult[Handler] = self._searcher(text)
 				logger.debug(f"input: '{text}' similarity: '{result.similarity}' handler: '{getattr(result.value, "__name__", None)}'")

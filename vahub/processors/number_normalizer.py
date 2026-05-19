@@ -17,22 +17,23 @@ numbers = {
 }
 
 
-def get_manifest() -> dict:
-	return {
-		"name": "Simple number normalizer",
-		"version": "1.0",
-
-		"numbers_normalizers": {
-			"simple": text_to_number,
-		}
-	}
-
-def text_to_number(text: str) -> int | None:
-	if not text:
-		return 
+def text_to_number(text: str) -> str:
 	words = text.lower().split()
-	result = 0
+	rtext = []
+	c, l = 0, 0
 	for w in words:
 		if w in numbers:
-			result += numbers[w]
-	return result
+			n = numbers[w]
+			if len(str(l)) <= len(str(n)) or (l > 10 and l < 20):
+				c = int(str(c) + str(n))
+			else:
+				c += n
+			l = n
+		else:
+			if c > 0:
+				rtext.append(str(c))
+				c, l = 0, 0
+			rtext.append(w)
+	if c > 0:
+		rtext.append(str(c))
+	return " ".join(rtext)
