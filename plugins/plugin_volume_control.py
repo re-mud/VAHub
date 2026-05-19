@@ -5,7 +5,7 @@ from vahub.contracts import Context
 def get_manifest() -> dict:
 	return {
 		"name": "Volume control",
-		"version": "1.1",
+		"version": "1.2",
 
 		"default_options": {
 			"volume_step": 10,
@@ -49,6 +49,7 @@ def set_volume(context: Context, text: str) -> None:
 	volume = get_volume_from_text(context, text)
 	if volume is None:
 		context.say("неверный параметр громкости")
+		return
 	_set_volume(volume)
 
 def volume_up(context: Context, text: str) -> None:
@@ -68,7 +69,10 @@ def volume_down(context: Context, text: str) -> None:
 	_set_volume(volume)
 
 def get_volume_from_text(context: Context, text: str) -> int | None:
-	volume = context.normalize_numbers(text)
-	if volume is None:
-		return
-	return max(0, min(volume, 100)) / 100
+	volume = None
+	for w in text.split():
+		if w.isdigit():
+			volume = int(w)
+			break
+	if volume:
+		return max(0, min(volume, 100)) / 100
